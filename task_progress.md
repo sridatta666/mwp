@@ -1,0 +1,3 @@
+- [ ] Read `lib/core/theme.dart` to confirm the context of the error
+- [ ] Replace `CardTheme` with `CardThemeData` in `lib/core/theme.dart`
+- [ ] Verify the file content after modification
