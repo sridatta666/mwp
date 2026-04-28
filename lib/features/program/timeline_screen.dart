@@ -193,16 +193,23 @@ class _TimelineScreenState extends State<TimelineScreen> {
 
   Widget _buildDayCard(ProgramDay day) {
     bool isRest = day.isRestDay;
-    bool isComplete = !isRest && day.workoutId != null && _completedIds.contains(day.workoutId);
+    bool hasWorkouts = day.workoutIds.isNotEmpty;
+    bool isComplete = !isRest &&
+        hasWorkouts &&
+        day.workoutIds.every((id) => _completedIds.contains(id));
 
     return GestureDetector(
       onTap: () async {
         if (isRest) return;
-        if (day.workoutId == null) {
+        if (!hasWorkouts) {
           ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No workout assigned yet.")));
           return;
         }
-        await context.push('/workout/${day.workoutId}');
+        if (day.workoutIds.length == 1) {
+          await context.push('/workout/${day.workoutIds.first}');
+        } else {
+          await _showDayWorkoutPicker(day);
+        }
         _fetchSchedule();
       },
       child: Container(
@@ -255,6 +262,16 @@ class _TimelineScreenState extends State<TimelineScreen> {
                       decoration: isComplete ? TextDecoration.lineThrough : null,
                     ),
                   ),
+                  if (!isRest && day.workoutIds.length > 1)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(
+                        "${day.workoutIds.length} videos",
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: AppTheme.textMuted,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -263,6 +280,48 @@ class _TimelineScreenState extends State<TimelineScreen> {
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> _showDayWorkoutPicker(ProgramDay day) async {
+    await showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: AppTheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        final items = day.workouts;
+        return SafeArea(
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              ListTile(
+                title: Text(
+                  "Day ${day.dayNumber} workouts",
+                  style: const TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w700),
+                ),
+              ),
+              for (int i = 0; i < day.workoutIds.length; i++)
+                ListTile(
+                  leading: Icon(
+                    items.length > i && items[i].isPremium ? Icons.lock_rounded : Icons.play_arrow_rounded,
+                    color: items.length > i && items[i].isPremium ? AppTheme.accent : AppTheme.primary,
+                  ),
+                  title: Text(
+                    items.length > i ? items[i].title : "Workout ${i + 1}",
+                    style: const TextStyle(color: AppTheme.textPrimary),
+                  ),
+                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.textMuted),
+                  onTap: () async {
+                    Navigator.pop(context);
+                    await this.context.push('/workout/${day.workoutIds[i]}');
+                  },
+                ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

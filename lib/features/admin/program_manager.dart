@@ -1,10 +1,6 @@
-import 'dart:io';
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:http/http.dart' as http;
 import '../../core/models.dart';
 import '../../core/supabase_service.dart';
 import '../../core/theme.dart';
@@ -276,7 +272,7 @@ class _ProgramEditorState extends State<ProgramEditor> {
     // Only fetch for Standard Program logic
     final workoutResponse = await client.from('workouts').select();
     final workouts = (workoutResponse as List).map((e) => Workout.fromJson(e)).toList();
-    final daysResponse = await client.from('program_days').select('*, workouts(*)').eq('program_id', widget.program.id).order('day_number', ascending: true);
+    final daysResponse = await client.from('program_days').select().eq('program_id', widget.program.id).order('day_number', ascending: true);
     final days = (daysResponse as List).map((e) => ProgramDay.fromJson(e)).toList();
 
     if (mounted) {
@@ -299,6 +295,7 @@ class _ProgramEditorState extends State<ProgramEditor> {
       'week_number': weekNum,
       'is_rest_day': false,
       'workout_id': defaultWorkoutId,
+      'workout_ids': defaultWorkoutId == null ? <String>[] : [defaultWorkoutId],
     });
     if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Day Added!")));
@@ -309,9 +306,10 @@ class _ProgramEditorState extends State<ProgramEditor> {
   }
   }
 
-  Future<void> _updateDay(String dayId, String? workoutId, bool isRest) async {
+  Future<void> _updateDay(String dayId, List<String> workoutIds, bool isRest) async {
     await Supabase.instance.client.from('program_days').update({
-      'workout_id': workoutId,
+      'workout_ids': isRest ? <String>[] : workoutIds,
+      'workout_id': isRest || workoutIds.isEmpty ? null : workoutIds.first,
       'is_rest_day': isRest,
     }).eq('id', dayId);
     _fetchData();
@@ -352,22 +350,69 @@ class _ProgramEditorState extends State<ProgramEditor> {
                         Row(
                           children: [
                             Text("Rest day?", style: TextStyle(color: AppTheme.textPrimary)),
-                            Switch(value: day.isRestDay, onChanged: (val) => _updateDay(day.id, null, val), activeColor: AppTheme.primary),
+                            Switch(
+                              value: day.isRestDay,
+                              onChanged: (val) => _updateDay(day.id, day.workoutIds, val),
+                              activeThumbColor: AppTheme.primary,
+                            ),
                           ],
                         ),
                         if (!day.isRestDay)
-                          DropdownButtonFormField<String>(
-                            value: _allWorkouts.any((w) => w.id == day.workoutId) ? day.workoutId : null,
-                            dropdownColor: AppTheme.surfaceVariant,
-                            isExpanded: true,
-                            decoration: InputDecoration(
-                              labelText: "Select workout",
-                              labelStyle: TextStyle(color: AppTheme.textMuted),
-                              filled: true,
-                              fillColor: AppTheme.surface,
-                            ),
-                            items: _allWorkouts.map((w) => DropdownMenuItem(value: w.id, child: Text(w.title, style: TextStyle(color: AppTheme.textPrimary)))).toList(),
-                            onChanged: (newId) => _updateDay(day.id, newId, false),
+                          Column(
+                            children: [
+                              for (int i = 0; i < day.workoutIds.length; i++) ...[
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: DropdownButtonFormField<String>(
+                                        initialValue: _allWorkouts.any((w) => w.id == day.workoutIds[i]) ? day.workoutIds[i] : null,
+                                        dropdownColor: AppTheme.surfaceVariant,
+                                        isExpanded: true,
+                                        decoration: InputDecoration(
+                                          labelText: "Workout ${i + 1}",
+                                          labelStyle: TextStyle(color: AppTheme.textMuted),
+                                          filled: true,
+                                          fillColor: AppTheme.surface,
+                                        ),
+                                        items: _allWorkouts
+                                            .map((w) => DropdownMenuItem(
+                                                  value: w.id,
+                                                  child: Text(w.title, style: TextStyle(color: AppTheme.textPrimary)),
+                                                ))
+                                            .toList(),
+                                        onChanged: (newId) {
+                                          if (newId == null) return;
+                                          final updated = List<String>.from(day.workoutIds);
+                                          updated[i] = newId;
+                                          _updateDay(day.id, updated, false);
+                                        },
+                                      ),
+                                    ),
+                                    IconButton(
+                                      icon: Icon(Icons.remove_circle_rounded, color: AppTheme.accent),
+                                      onPressed: () {
+                                        final updated = List<String>.from(day.workoutIds)..removeAt(i);
+                                        _updateDay(day.id, updated, false);
+                                      },
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                              ],
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: _allWorkouts.isEmpty
+                                      ? null
+                                      : () {
+                                          final updated = List<String>.from(day.workoutIds)..add(_allWorkouts.first.id);
+                                          _updateDay(day.id, updated, false);
+                                        },
+                                  icon: const Icon(Icons.add_rounded),
+                                  label: const Text("Add workout"),
+                                ),
+                              ),
+                            ],
                           ),
                       ],
                     ),

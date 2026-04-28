@@ -42,46 +42,80 @@ class ProgramDay {
   final String id;
   final int dayNumber;
   final int weekNumber;
-  final String? workoutId;
+  final List<String> workoutIds;
   final bool isRestDay;
-  final String title;
-  final bool isPremium; // From joined workout
+  final List<DayWorkoutItem> workouts;
 
   ProgramDay({
     required this.id,
     required this.dayNumber,
     required this.weekNumber,
-    this.workoutId,
+    this.workoutIds = const [],
     required this.isRestDay,
-    required this.title,
-    this.isPremium = false,
+    this.workouts = const [],
   });
 
-  factory ProgramDay.fromJson(Map<String, dynamic> json) {
-    String displayTitle = "Workout";
-    bool premium = false;
-
-    // If the joined 'workouts' table exists
-    if (json['workouts'] != null) {
-      displayTitle = json['workouts']['title'] ?? "Workout";
-      premium = json['workouts']['is_premium'] ?? false;
+  String get title {
+    if (isRestDay) return "Rest Day";
+    if (workouts.isNotEmpty) {
+      if (workouts.length == 1) return workouts.first.title;
+      return "${workouts.length} workouts";
     }
-    
-    // Override if day has specific title (rare)
-   if (json['title'] != null && json['title'].toString().isNotEmpty) {
-      displayTitle = json['title'];
+    if (workoutIds.length == 1) return "Workout";
+    return "${workoutIds.length} workouts";
+  }
+
+  bool get isPremium {
+    return workouts.any((w) => w.isPremium);
+  }
+
+  factory ProgramDay.fromJson(
+    Map<String, dynamic> json, {
+    Map<String, DayWorkoutItem>? workoutLookup,
+  }) {
+    final List<String> ids = [];
+
+    // New schema: an array of workout IDs per day.
+    if (json['workout_ids'] is List) {
+      for (final entry in (json['workout_ids'] as List)) {
+        if (entry != null) ids.add(entry.toString());
+      }
+    }
+
+    // Backward compatibility: existing rows with a single workout_id.
+    if (ids.isEmpty && json['workout_id'] != null) {
+      ids.add(json['workout_id'].toString());
+    }
+
+    final mappedWorkouts = <DayWorkoutItem>[];
+    if (workoutLookup != null) {
+      for (final id in ids) {
+        final item = workoutLookup[id];
+        if (item != null) mappedWorkouts.add(item);
+      }
     }
 
     return ProgramDay(
       id: json['id'],
       dayNumber: json['day_number'],
       weekNumber: json['week_number'] ?? 1,
-      workoutId: json['workout_id'], 
+      workoutIds: ids,
       isRestDay: json['is_rest_day'] ?? false,
-      title: displayTitle,
-      isPremium: premium,
+      workouts: mappedWorkouts,
     );
   }
+}
+
+class DayWorkoutItem {
+  final String id;
+  final String title;
+  final bool isPremium;
+
+  DayWorkoutItem({
+    required this.id,
+    required this.title,
+    required this.isPremium,
+  });
 }
 
 class WorkoutClip {

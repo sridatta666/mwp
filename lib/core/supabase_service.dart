@@ -129,13 +129,47 @@ class SupabaseService {
     final rawData = await _fetchWithCache('days_$programId', () async {
       return await _client
           .from('program_days')
-          .select('*, workouts(*)')
+          .select()
           .eq('program_id', programId)
           .order('day_number', ascending: true);
     });
 
-    // USE _cast HERE
-    return rawData.map((item) => ProgramDay.fromJson(_cast(item))).toList();
+    final daysJson = rawData.map((item) => _cast(item)).toList();
+
+    final workoutIds = <String>{};
+    for (final day in daysJson) {
+      final list = day['workout_ids'];
+      if (list is List) {
+        for (final entry in list) {
+          if (entry != null) workoutIds.add(entry.toString());
+        }
+      } else if (day['workout_id'] != null) {
+        // Backward compatibility with old schema.
+        workoutIds.add(day['workout_id'].toString());
+      }
+    }
+
+    final workoutLookup = <String, DayWorkoutItem>{};
+    if (workoutIds.isNotEmpty) {
+      final workoutRows = await _client
+          .from('workouts')
+          .select('id, title, is_premium')
+          .inFilter('id', workoutIds.toList());
+      for (final row in (workoutRows as List)) {
+        final item = _cast(row);
+        final id = item['id']?.toString();
+        if (id == null) continue;
+        workoutLookup[id] = DayWorkoutItem(
+          id: id,
+          title: item['title']?.toString() ?? 'Workout',
+          isPremium: item['is_premium'] == true,
+        );
+      }
+    }
+
+    return daysJson
+        .map((item) => ProgramDay.fromJson(item, workoutLookup: workoutLookup))
+        .toList();
   }
 
   // 3. Fetch Workout Details
