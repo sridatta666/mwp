@@ -8,10 +8,10 @@ import '../../core/glass_widgets.dart';
 
 /// Deep link path for password reset. Must be allowed in Supabase Dashboard →
 /// Authentication → URL Configuration → Redirect URLs (e.g. mwp://reset-password).
-const String kResetPasswordRedirectPath = 'mwp://reset-password';
+String kResetPasswordRedirectPath = 'mwp://reset-password';
 
 class ForgotPasswordScreen extends StatefulWidget {
-  const ForgotPasswordScreen({super.key});
+  ForgotPasswordScreen({super.key});
 
   @override
   State<ForgotPasswordScreen> createState() => _ForgotPasswordScreenState();
@@ -35,7 +35,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your email address.')),
+        SnackBar(content: Text('Please enter your email address.')),
       );
       return;
     }
@@ -85,11 +85,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         leading: IconButton(
-          icon: const Icon(Icons.arrow_back_rounded),
+          icon: Icon(Icons.arrow_back_rounded),
           onPressed: () => context.go('/login'),
         ),
       ),
@@ -97,11 +97,11 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: EdgeInsets.symmetric(horizontal: 28),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
+                constraints: BoxConstraints(maxWidth: 400),
                 child: GlassCard(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(24),
                   child: _emailSent ? _buildSuccessView() : _buildForm(theme),
                 ),
               ),
@@ -119,48 +119,48 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         Icon(
           Icons.lock_reset_rounded,
           size: 64,
-          color: AppTheme.primary.withValues(alpha: 0.9),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Text(
           'Forgot password?',
           style: theme.textTheme.headlineSmall?.copyWith(
-            color: AppTheme.textPrimary,
+            color: Theme.of(context).colorScheme.onSurface,
             fontWeight: FontWeight.w700,
           ),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8),
         Text(
           'Enter your email and we\'ll send you a link to reset your password.',
           textAlign: TextAlign.center,
-          style: theme.textTheme.bodyMedium?.copyWith(color: AppTheme.textMuted),
+          style: theme.textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32),
         TextField(
           controller: _emailController,
           keyboardType: TextInputType.emailAddress,
           autocorrect: false,
-          style: const TextStyle(color: AppTheme.textPrimary),
-          decoration: const InputDecoration(
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+          decoration: InputDecoration(
             labelText: 'Email',
-            prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textMuted),
+            prefixIcon: Icon(Icons.email_outlined, color: Theme.of(context).colorScheme.outline),
           ),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         SizedBox(
           width: double.infinity,
           height: 56,
           child: ElevatedButton(
             onPressed: _isLoading ? null : _sendResetLink,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: AppTheme.background,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(16),
               ),
             ),
             child: _isLoading
-                ? const SizedBox(
+                ? SizedBox(
                     width: 24,
                     height: 24,
                     child: CircularProgressIndicator(
@@ -168,7 +168,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                       color: AppTheme.background,
                     ),
                   )
-                : const Text('Send reset link'),
+                : Text('Send reset link'),
           ),
         ),
       ],
@@ -182,31 +182,31 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
         Icon(
           Icons.mark_email_read_rounded,
           size: 64,
-          color: AppTheme.primary.withValues(alpha: 0.9),
+          color: Theme.of(context).colorScheme.primary.withValues(alpha: 0.9),
         ),
-        const SizedBox(height: 24),
+        SizedBox(height: 24),
         Text(
           'Check your email',
           style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppTheme.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
               ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12),
         Text(
           'We sent a password reset link to ${_emailController.text.trim()}. '
           'Click the link in the email to set a new password.',
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppTheme.textMuted,
+                color: Theme.of(context).colorScheme.outline,
               ),
         ),
-        const SizedBox(height: 32),
+        SizedBox(height: 32),
         TextButton.icon(
           onPressed: () => context.go('/login'),
-          icon: const Icon(Icons.arrow_back_rounded, size: 20),
-          label: const Text('Back to login'),
-          style: TextButton.styleFrom(foregroundColor: AppTheme.primary),
+          icon: Icon(Icons.arrow_back_rounded, size: 20),
+          label: Text('Back to login'),
+          style: TextButton.styleFrom(foregroundColor: Theme.of(context).colorScheme.primary),
         ),
       ],
     );

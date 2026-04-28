@@ -213,17 +213,17 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       context: context,
       barrierDismissible: false,
       builder: (_) => AlertDialog(
-        backgroundColor: AppTheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text("Workout complete!", style: TextStyle(color: AppTheme.textPrimary)),
-        content: Text("Great job.", style: TextStyle(color: AppTheme.textSecondary)),
+        title: Text("Workout complete!", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        content: Text("Great job.", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         actions: [
           TextButton(
             onPressed: () {
               context.pop();
               context.pop();
             },
-            child: Text("Finish", style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w600)),
+            child: Text("Finish", style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600)),
           )
         ],
       ),
@@ -244,14 +244,14 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     // If data is not loaded yet, show spinner
     if (_workout == null) {
       return Scaffold(
-        backgroundColor: AppTheme.background,
-        body: GlassPage(child: Center(child: CircularProgressIndicator(color: AppTheme.primary))),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: GlassPage(child: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))),
       );
     }
 
     if (_workout!.type == 'sequence') {
       return Scaffold(
-        backgroundColor: AppTheme.background,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: GlassPage(
           child: SequencePlayer(
             workout: _workout!,
@@ -262,7 +262,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: GlassPage(
         child: OrientationBuilder(
         builder: (context, orientation) {
@@ -292,7 +292,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                             child: VideoPlayer(_controller!),
                           ),
                         if (_isLoading || (_controller == null || !_controller!.value.isInitialized) || _isBuffering)
-                          CircularProgressIndicator(color: AppTheme.primary),
+                          CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
                         
                         // CONTROLS OVERLAY
                         if (_controller != null && _controller!.value.isInitialized)
@@ -313,7 +313,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                     return Container(
                       padding: const EdgeInsets.symmetric(horizontal: 24),
                       decoration: BoxDecoration(
-                        color: AppTheme.surface,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: const BorderRadius.vertical(top: Radius.circular(28)),
                         boxShadow: [BoxShadow(color: Colors.black.withOpacity(0.4), blurRadius: 16, offset: const Offset(0, -4))],
                       ),
@@ -327,7 +327,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                               width: 40,
                               height: 4,
                               decoration: BoxDecoration(
-                                color: AppTheme.textMuted,
+                                color: Theme.of(context).colorScheme.outline,
                                 borderRadius: BorderRadius.circular(2),
                               ),
                             ),
@@ -336,23 +336,23 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                           Text(
                             _workout!.title,
                             style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                              color: AppTheme.textPrimary,
+                              color: Theme.of(context).colorScheme.onSurface,
                               fontWeight: FontWeight.w700,
                             ),
                           ),
                           const SizedBox(height: 12),
                           Row(
                             children: [
-                              _buildBadge(Icons.schedule_rounded, "${_workout!.duration} min", AppTheme.primary),
+                              _buildBadge(Icons.schedule_rounded, "${_workout!.duration} min", Theme.of(context).colorScheme.primary),
                               const SizedBox(width: 12),
-                              _buildBadge(Icons.bar_chart_rounded, _workout!.difficulty, AppTheme.accent),
+                              _buildBadge(Icons.bar_chart_rounded, _workout!.difficulty, Theme.of(context).colorScheme.secondary),
                             ],
                           ),
                           const SizedBox(height: 24),
                           Text(
                             "Instructions",
                             style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                              color: AppTheme.textMuted,
+                              color: Theme.of(context).colorScheme.outline,
                               letterSpacing: 1,
                             ),
                           ),
@@ -360,7 +360,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                           Text(
                             "Follow the movements carefully. Focus on form over speed. If you feel pain, stop immediately.",
                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: AppTheme.textSecondary,
+                              color: Theme.of(context).colorScheme.onSurfaceVariant,
                               height: 1.5,
                             ),
                           ),
@@ -373,7 +373,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                               child: ElevatedButton(
                                 onPressed: _handleWorkoutComplete,
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppTheme.primary,
+                                  backgroundColor: Theme.of(context).colorScheme.primary,
                                   foregroundColor: AppTheme.background,
                                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                                 ),
@@ -394,7 +394,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                   confettiController: _confettiController,
                   blastDirectionality: BlastDirectionality.explosive,
                   shouldLoop: false,
-                  colors: [AppTheme.primary, AppTheme.accent, Colors.amber, Colors.pink],
+                  colors: [Theme.of(context).colorScheme.primary, Theme.of(context).colorScheme.secondary, Colors.amber, Colors.pink],
                 ),
               ),
             ],
@@ -534,10 +534,10 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
                               trackHeight: 2,
                               thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
                               overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
-                              activeTrackColor: AppTheme.primary,
-                              inactiveTrackColor: AppTheme.textMuted.withOpacity(0.5),
-                              thumbColor: AppTheme.primary,
-                              overlayColor: AppTheme.primary.withOpacity(0.2),
+                              activeTrackColor: Theme.of(context).colorScheme.primary,
+                              inactiveTrackColor: Theme.of(context).colorScheme.outline.withOpacity(0.5),
+                              thumbColor: Theme.of(context).colorScheme.primary,
+                              overlayColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
                             ),
                             child: Slider(
                               value: val,
@@ -578,13 +578,13 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
       return SizedBox(
         width: 24,
         height: 24,
-        child: CircularProgressIndicator(value: _downloadProgress, color: AppTheme.primary, strokeWidth: 3),
+        child: CircularProgressIndicator(value: _downloadProgress, color: Theme.of(context).colorScheme.primary, strokeWidth: 3),
       );
     }
     return IconButton(
       icon: Icon(
         _isDownloaded ? Icons.check_circle_rounded : Icons.download_for_offline_rounded,
-        color: _isDownloaded ? AppTheme.primary : Colors.white,
+        color: _isDownloaded ? Theme.of(context).colorScheme.primary : Colors.white,
         size: 28,
       ),
       onPressed: _handleDownload,

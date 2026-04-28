@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/supabase_service.dart';
 import '../../core/models.dart';
-import '../../core/theme.dart';
 import '../../core/glass_widgets.dart';
 
 class WorkoutHistoryScreen extends StatefulWidget {
@@ -25,10 +24,12 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
   Future<void> _load() async {
     setState(() => _isLoading = true);
     final list = await SupabaseService().fetchWorkoutHistory();
-    if (mounted) setState(() {
+    if (mounted) {
+      setState(() {
       _entries = list;
       _isLoading = false;
     });
+    }
   }
 
   String _formatDate(DateTime d) {
@@ -47,7 +48,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Workout history'),
         backgroundColor: Colors.transparent,
@@ -61,29 +62,29 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
       ),
       body: GlassPage(
         child: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
+          ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
           : _entries.isEmpty
               ? Center(
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.fitness_center_rounded, size: 64, color: AppTheme.textMuted),
+                      Icon(Icons.fitness_center_rounded, size: 64, color: Theme.of(context).colorScheme.outline),
                       const SizedBox(height: 16),
                       Text(
                         'No workouts completed yet',
-                        style: theme.textTheme.titleMedium?.copyWith(color: AppTheme.textSecondary),
+                        style: theme.textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
                       ),
                       const SizedBox(height: 8),
                       Text(
                         'Complete a workout to see it here',
-                        style: theme.textTheme.bodySmall?.copyWith(color: AppTheme.textMuted),
+                        style: theme.textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline),
                       ),
                     ],
                   ),
                 )
               : RefreshIndicator(
                   onRefresh: _load,
-                  color: AppTheme.primary,
+                  color: Theme.of(context).colorScheme.primary,
                   child: ListView.builder(
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     itemCount: _entries.length,
@@ -91,23 +92,23 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                       final e = _entries[i];
                       return Card(
                         margin: const EdgeInsets.only(bottom: 10),
-                        color: AppTheme.surfaceVariant,
+                        color: Theme.of(context).colorScheme.surfaceContainerHighest,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
                         child: ListTile(
                           contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                           leading: CircleAvatar(
-                            backgroundColor: AppTheme.primary.withOpacity(0.2),
-                            child: const Icon(Icons.check_rounded, color: AppTheme.primary),
+                            backgroundColor: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                            child: Icon(Icons.check_rounded, color: Theme.of(context).colorScheme.primary),
                           ),
                           title: Text(
                             e.title,
-                            style: theme.textTheme.titleSmall?.copyWith(color: AppTheme.textPrimary),
+                            style: theme.textTheme.titleSmall?.copyWith(color: Theme.of(context).colorScheme.onSurface),
                           ),
                           subtitle: Text(
                             '${_formatDate(e.completedAt)} · ${_formatTime(e.completedAt)}',
-                            style: theme.textTheme.bodySmall?.copyWith(color: AppTheme.textMuted),
+                            style: theme.textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline),
                           ),
-                          trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.textMuted),
+                          trailing: Icon(Icons.arrow_forward_ios_rounded, size: 14, color: Theme.of(context).colorScheme.outline),
                           onTap: () => context.push('/workout/${e.workoutId}'),
                         ),
                       );

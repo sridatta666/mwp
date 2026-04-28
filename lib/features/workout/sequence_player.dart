@@ -221,8 +221,8 @@ class _SequencePlayerState extends State<SequencePlayer> {
                 // Timer Display
                 Column(
                   children: [
-                    Icon(Icons.timer_rounded, color: AppTheme.primary, size: 20),
-                    Text(_formatTime(_elapsedSeconds), style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+                    Icon(Icons.timer_rounded, color: Theme.of(context).colorScheme.primary, size: 20),
+                    Text(_formatTime(_elapsedSeconds), style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
                   ],
                 ),
                 const SizedBox(width: 15),
@@ -237,7 +237,7 @@ class _SequencePlayerState extends State<SequencePlayer> {
                 ElevatedButton(
                   onPressed: _handleNext,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primary,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: AppTheme.background,
                     shape: const CircleBorder(),
                     padding: const EdgeInsets.all(12),
@@ -258,7 +258,7 @@ class _SequencePlayerState extends State<SequencePlayer> {
               children: [
                 Padding(
                   padding: const EdgeInsets.fromLTRB(15, 10, 15, 5),
-                  child: Text("Timeline", style: TextStyle(color: AppTheme.textMuted, fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
+                  child: Text("Timeline", style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12, fontWeight: FontWeight.w700, letterSpacing: 1.2)),
                 ),
                 Expanded(
                   child: ListView.builder(
@@ -292,12 +292,12 @@ class _SequencePlayerState extends State<SequencePlayer> {
       controller: controller,
       keyboardType: TextInputType.number,
       textAlign: TextAlign.center,
-      style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold),
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold),
       decoration: InputDecoration(
         labelText: label,
-        labelStyle: TextStyle(color: AppTheme.textMuted, fontSize: 12),
+        labelStyle: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12),
         filled: true,
-        fillColor: AppTheme.surface,
+        fillColor: Theme.of(context).colorScheme.surface,
         contentPadding: const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(10), borderSide: BorderSide.none),
       ),
@@ -314,7 +314,7 @@ class _SequencePlayerState extends State<SequencePlayer> {
              child: VideoPlayer(_controller!),
            )
         else
-          CircularProgressIndicator(color: AppTheme.primary),
+          CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
 
         _buildControls(),
         
@@ -373,24 +373,24 @@ class _SequencePlayerState extends State<SequencePlayer> {
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppTheme.primary.withOpacity(0.3), AppTheme.surface],
+          colors: [Theme.of(context).colorScheme.primary.withOpacity(0.3), Theme.of(context).colorScheme.surface],
         ),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text("Rest", style: TextStyle(color: AppTheme.textPrimary, fontSize: 32, fontWeight: FontWeight.w800)),
+          Text("Rest", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 32, fontWeight: FontWeight.w800)),
           const SizedBox(height: 16),
-          Text("$_restTimeRemaining", style: TextStyle(color: AppTheme.primary, fontSize: 72, fontWeight: FontWeight.w800)),
+          Text("$_restTimeRemaining", style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 72, fontWeight: FontWeight.w800)),
           const SizedBox(height: 32),
-          Text("Up next", style: TextStyle(color: AppTheme.textMuted, fontSize: 12, letterSpacing: 1.5)),
+          Text("Up next", style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12, letterSpacing: 1.5)),
           const SizedBox(height: 8),
-          Text(nextClip.title, style: TextStyle(color: AppTheme.textPrimary, fontSize: 22, fontWeight: FontWeight.w700)),
+          Text(nextClip.title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 22, fontWeight: FontWeight.w700)),
           const SizedBox(height: 40),
           ElevatedButton(
             onPressed: _skipRest,
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primary,
+              backgroundColor: Theme.of(context).colorScheme.primary,
               foregroundColor: AppTheme.background,
               padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
@@ -403,8 +403,8 @@ class _SequencePlayerState extends State<SequencePlayer> {
   }
 
   Widget _buildTimelineItem(int index, WorkoutClip clip, bool isCurrent, bool isPast) {
-    Color color = isCurrent ? AppTheme.primary : (isPast ? AppTheme.textMuted : AppTheme.textPrimary);
-    if (isCurrent && _isResting) color = AppTheme.accent; 
+    Color color = isCurrent ? Theme.of(context).colorScheme.primary : (isPast ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.onSurface);
+    if (isCurrent && _isResting) color = Theme.of(context).colorScheme.secondary; 
 
     return Column(
       children: [
@@ -413,21 +413,21 @@ class _SequencePlayerState extends State<SequencePlayer> {
             width: 30, height: 30,
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: isCurrent ? AppTheme.primary : (isPast ? AppTheme.primary : AppTheme.surfaceVariant),
+              color: isCurrent ? Theme.of(context).colorScheme.primary : (isPast ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.surfaceContainerHighest),
               border: isCurrent ? Border.all(color: Colors.white, width: 2) : null,
             ),
             child: Center(
               child: isPast
                   ? Icon(Icons.check_rounded, size: 16, color: Colors.white)
-                  : Text("${index + 1}", style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+                  : Text("${index + 1}", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
             ),
           ),
           title: Text(
             clip.title,
-            style: TextStyle(color: isPast ? AppTheme.textMuted : AppTheme.textPrimary, fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal),
+            style: TextStyle(color: isPast ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.onSurface, fontWeight: isCurrent ? FontWeight.bold : FontWeight.normal),
           ),
           trailing: isCurrent && _isPlaying
-              ? Icon(Icons.graphic_eq_rounded, color: AppTheme.primary)
+              ? Icon(Icons.graphic_eq_rounded, color: Theme.of(context).colorScheme.primary)
               : null,
           contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 5),
         ),
@@ -437,21 +437,21 @@ class _SequencePlayerState extends State<SequencePlayer> {
             padding: const EdgeInsets.only(left: 35), 
             child: Row(
               children: [
-                      Container(width: 2, height: 20, color: AppTheme.surfaceVariant),
+                      Container(width: 2, height: 20, color: Theme.of(context).colorScheme.surfaceContainerHighest),
                       const SizedBox(width: 20),
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: (isCurrent && _isResting) ? AppTheme.primary.withOpacity(0.3) : AppTheme.surfaceVariant,
+                          color: (isCurrent && _isResting) ? Theme.of(context).colorScheme.primary.withOpacity(0.3) : Theme.of(context).colorScheme.surfaceContainerHighest,
                           borderRadius: BorderRadius.circular(6),
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.timer_rounded, size: 12, color: (isCurrent && _isResting) ? AppTheme.primary : AppTheme.textMuted),
+                            Icon(Icons.timer_rounded, size: 12, color: (isCurrent && _isResting) ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline),
                             const SizedBox(width: 6),
                             Text(
                               "${clip.restDuration}s rest",
-                              style: TextStyle(color: (isCurrent && _isResting) ? AppTheme.textPrimary : AppTheme.textMuted, fontSize: 12),
+                              style: TextStyle(color: (isCurrent && _isResting) ? Theme.of(context).colorScheme.onSurface : Theme.of(context).colorScheme.outline, fontSize: 12),
                             ),
                           ],
                         ),
@@ -464,7 +464,7 @@ class _SequencePlayerState extends State<SequencePlayer> {
           Container(
             padding: const EdgeInsets.only(left: 35),
             alignment: Alignment.centerLeft,
-            child: Container(width: 2, height: 20, color: AppTheme.surfaceVariant),
+            child: Container(width: 2, height: 20, color: Theme.of(context).colorScheme.surfaceContainerHighest),
           ),
       ],
     );

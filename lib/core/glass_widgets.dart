@@ -7,8 +7,12 @@ class GlassPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
-      decoration: const BoxDecoration(gradient: AppTheme.pageGradient),
+      decoration: BoxDecoration(
+        gradient: isDark ? AppTheme.pageGradient : null,
+        color: isDark ? null : Theme.of(context).scaffoldBackgroundColor,
+      ),
       child: child,
     );
   }
@@ -30,13 +34,16 @@ class GlassCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: margin,
       padding: padding,
       decoration: BoxDecoration(
-        color: AppTheme.surface.withValues(alpha: 0.78),
+        color: isDark 
+            ? Theme.of(context).colorScheme.surface.withValues(alpha: 0.78)
+            : Theme.of(context).colorScheme.surface.withValues(alpha: 0.9),
         borderRadius: BorderRadius.circular(borderRadius),
-        border: Border.all(color: AppTheme.glassStroke),
+        border: Border.all(color: isDark ? Theme.of(context).colorScheme.outlineVariant : Color(0x1F000000)),
       ),
       child: child,
     );

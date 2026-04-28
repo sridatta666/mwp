@@ -10,7 +10,7 @@ import '../../core/glass_widgets.dart';
 
 class TimelineScreen extends StatefulWidget {
   final String programId;
-  const TimelineScreen({super.key, required this.programId});
+  TimelineScreen({super.key, required this.programId});
 
   @override
   State<TimelineScreen> createState() => _TimelineScreenState();
@@ -65,13 +65,13 @@ class _TimelineScreenState extends State<TimelineScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: AppTheme.background,
-        body: GlassPage(child: Center(child: CircularProgressIndicator(color: AppTheme.primary))),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        body: GlassPage(child: Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: GlassPage(
         child: CustomScrollView(
         slivers: [
@@ -79,16 +79,16 @@ class _TimelineScreenState extends State<TimelineScreen> {
             expandedHeight: 240,
             floating: false,
             pinned: true,
-            backgroundColor: AppTheme.background,
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back_rounded),
+              icon: Icon(Icons.arrow_back_rounded),
               onPressed: () => context.pop(),
             ),
             flexibleSpace: FlexibleSpaceBar(
               title: Text(
                 _programTitle,
-                style: const TextStyle(
-                  color: AppTheme.textPrimary,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
                   fontSize: 18,
                 ),
@@ -100,18 +100,18 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     CachedNetworkImage(
                       imageUrl: _programImage!,
                       fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(color: AppTheme.surface),
-                      errorWidget: (_, __, ___) => Container(color: AppTheme.surface),
+                      placeholder: (_, _) => Container(color: Theme.of(context).colorScheme.surface),
+                      errorWidget: (_, _, _) => Container(color: Theme.of(context).colorScheme.surface),
                     )
                   else
                     Container(
-                      decoration: const BoxDecoration(
+                      decoration: BoxDecoration(
                         gradient: LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                           colors: [
-                            AppTheme.primary,
-                            AppTheme.surface,
+                            Theme.of(context).colorScheme.primary,
+                            Theme.of(context).colorScheme.surface,
                           ],
                         ),
                       ),
@@ -131,11 +131,11 @@ class _TimelineScreenState extends State<TimelineScreen> {
           ),
           SliverToBoxAdapter(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+              padding: EdgeInsets.fromLTRB(20, 16, 20, 8),
               child: Text(
                 _programDesc,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppTheme.textSecondary,
+                  color: Theme.of(context).colorScheme.onSurfaceVariant,
                   height: 1.5,
                 ),
               ),
@@ -159,22 +159,22 @@ class _TimelineScreenState extends State<TimelineScreen> {
                   children: [
                     if (isNewWeek)
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 24, 20, 12),
+                        padding: EdgeInsets.fromLTRB(20, 24, 20, 12),
                         child: Row(
                           children: [
                             Container(
                               width: 4,
                               height: 18,
                               decoration: BoxDecoration(
-                                color: AppTheme.primary,
+                                color: Theme.of(context).colorScheme.primary,
                                 borderRadius: BorderRadius.circular(2),
                               ),
                             ),
-                            const SizedBox(width: 10),
+                            SizedBox(width: 10),
                             Text(
                               "WEEK $displayWeek",
                               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                color: AppTheme.textPrimary,
+                                color: Theme.of(context).colorScheme.onSurface,
                                 fontWeight: FontWeight.w700,
                                 letterSpacing: 1.2,
                               ),
@@ -189,7 +189,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
               childCount: _days.length,
             ),
           ),
-          const SliverToBoxAdapter(child: SizedBox(height: 48)),
+          SliverToBoxAdapter(child: SizedBox(height: 48)),
         ],
         ),
       ),
@@ -205,14 +205,14 @@ class _TimelineScreenState extends State<TimelineScreen> {
         day.workoutIds.every((id) => _completedIds.contains(id));
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-      padding: const EdgeInsets.all(18),
+      margin: EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      padding: EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppTheme.surfaceVariant,
+        color: Theme.of(context).colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(18),
         border: isComplete
-            ? Border.all(color: AppTheme.primary.withOpacity(0.6), width: 2)
-            : (isRest ? Border.all(color: AppTheme.textMuted.withOpacity(0.3)) : null),
+            ? Border.all(color: Theme.of(context).colorScheme.primary.withOpacity(0.6), width: 2)
+            : (isRest ? Border.all(color: Theme.of(context).colorScheme.outline.withOpacity(0.3)) : null),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -223,20 +223,20 @@ class _TimelineScreenState extends State<TimelineScreen> {
                 width: 52,
                 height: 52,
                 decoration: BoxDecoration(
-                  color: isRest ? Colors.transparent : AppTheme.primary.withOpacity(0.2),
+                  color: isRest ? Colors.transparent : Theme.of(context).colorScheme.primary.withOpacity(0.2),
                   shape: BoxShape.circle,
-                  border: isRest ? Border.all(color: AppTheme.textMuted) : null,
+                  border: isRest ? Border.all(color: Theme.of(context).colorScheme.outline) : null,
                 ),
                 child: Center(
                   child: Icon(
                     isRest ? Icons.nightlight_round_rounded
                         : (isComplete ? Icons.check_rounded : (day.isPremium ? Icons.lock_rounded : Icons.play_arrow_rounded)),
-                    color: isRest ? AppTheme.textMuted : (day.isPremium ? AppTheme.accent : AppTheme.primary),
+                    color: isRest ? Theme.of(context).colorScheme.outline : (day.isPremium ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary),
                     size: 26,
                   ),
                 ),
               ),
-              const SizedBox(width: 16),
+              SizedBox(width: 16),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -244,26 +244,26 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     Text(
                       "Day ${day.dayNumber}",
                       style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                        color: isRest ? AppTheme.textMuted : AppTheme.primary,
+                        color: isRest ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.primary,
                         fontWeight: FontWeight.w700,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 4),
                     Text(
                       isRest ? "Rest Day" : day.title,
                       style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                        color: isComplete ? AppTheme.textMuted : AppTheme.textPrimary,
+                        color: isComplete ? Theme.of(context).colorScheme.outline : Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w600,
                         decoration: isComplete ? TextDecoration.lineThrough : null,
                       ),
                     ),
                     if (!isRest && hasMultiple)
                       Padding(
-                        padding: const EdgeInsets.only(top: 4),
+                        padding: EdgeInsets.only(top: 4),
                         child: Text(
                           "${day.workoutIds.length} videos",
                           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textMuted,
+                            color: Theme.of(context).colorScheme.outline,
                           ),
                         ),
                       ),
@@ -272,18 +272,18 @@ class _TimelineScreenState extends State<TimelineScreen> {
               ),
               if (!isRest && !isComplete && !hasMultiple)
                 IconButton(
-                  icon: Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textMuted, size: 14),
+                  icon: Icon(Icons.arrow_forward_ios_rounded, color: Theme.of(context).colorScheme.outline, size: 14),
                   onPressed: () async => _openWorkout(day.workoutIds.first),
                 ),
             ],
           ),
           if (!isRest && !hasWorkouts)
-            const Padding(
+            Padding(
               padding: EdgeInsets.only(top: 12),
-              child: Text("No workout assigned yet.", style: TextStyle(color: AppTheme.textMuted)),
+              child: Text("No workout assigned yet.", style: TextStyle(color: Theme.of(context).colorScheme.outline)),
             ),
           if (!isRest && hasMultiple) ...[
-            const SizedBox(height: 14),
+            SizedBox(height: 14),
             _buildWorkoutTimeline(day),
           ],
         ],
@@ -304,7 +304,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     width: 12,
                     height: 12,
                     decoration: BoxDecoration(
-                      color: _completedIds.contains(day.workoutIds[i]) ? AppTheme.primary : AppTheme.textMuted,
+                      color: _completedIds.contains(day.workoutIds[i]) ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.outline,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -312,21 +312,21 @@ class _TimelineScreenState extends State<TimelineScreen> {
                     Container(
                       width: 2,
                       height: 36,
-                      color: AppTheme.textMuted.withOpacity(0.35),
+                      color: Theme.of(context).colorScheme.outline.withOpacity(0.35),
                     ),
                 ],
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12),
               Expanded(
                 child: Padding(
-                  padding: const EdgeInsets.only(bottom: 10),
+                  padding: EdgeInsets.only(bottom: 10),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(10),
                     onTap: () async => _openWorkout(day.workoutIds[i]),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      padding: EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                       decoration: BoxDecoration(
-                        color: AppTheme.surface,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Row(
@@ -337,16 +337,16 @@ class _TimelineScreenState extends State<TimelineScreen> {
                                 : (day.workouts.length > i && day.workouts[i].isPremium
                                     ? Icons.lock_rounded
                                     : Icons.play_arrow_rounded),
-                            color: _completedIds.contains(day.workoutIds[i]) ? AppTheme.primary : AppTheme.textSecondary,
+                            color: _completedIds.contains(day.workoutIds[i]) ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
                           ),
-                          const SizedBox(width: 10),
+                          SizedBox(width: 10),
                           Expanded(
                             child: Text(
                               day.workouts.length > i ? day.workouts[i].title : "Workout ${i + 1}",
-                              style: const TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w600),
+                              style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.w600),
                             ),
                           ),
-                          const Icon(Icons.arrow_forward_ios_rounded, size: 13, color: AppTheme.textMuted),
+                          Icon(Icons.arrow_forward_ios_rounded, size: 13, color: Theme.of(context).colorScheme.outline),
                         ],
                       ),
                     ),

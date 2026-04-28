@@ -60,7 +60,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text('Rest timer'),
         backgroundColor: Colors.transparent,
@@ -74,7 +74,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
               const SizedBox(height: 24),
               Text(
                 _isRunning ? 'Rest' : 'Set rest time',
-                style: theme.textTheme.titleMedium?.copyWith(color: AppTheme.textMuted),
+                style: theme.textTheme.titleMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
               ),
               const SizedBox(height: 24),
               if (_isRunning)
@@ -86,7 +86,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
                         Text(
                           _formatDisplay(_remainingSeconds),
                           style: theme.textTheme.displayLarge?.copyWith(
-                            color: _remainingSeconds <= 10 ? AppTheme.accent : AppTheme.primary,
+                            color: _remainingSeconds <= 10 ? Theme.of(context).colorScheme.secondary : Theme.of(context).colorScheme.primary,
                             fontWeight: FontWeight.w800,
                             fontFeatures: [const FontFeature.tabularFigures()],
                           ),
@@ -100,7 +100,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
                               icon: const Icon(Icons.stop_rounded),
                               label: const Text('Stop'),
                               style: FilledButton.styleFrom(
-                                backgroundColor: AppTheme.accent,
+                                backgroundColor: Theme.of(context).colorScheme.secondary,
                                 foregroundColor: Colors.white,
                                 padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
                               ),
@@ -124,7 +124,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
                     ),
                     Text(
                       ':',
-                      style: theme.textTheme.headlineMedium?.copyWith(color: AppTheme.textPrimary),
+                      style: theme.textTheme.headlineMedium?.copyWith(color: Theme.of(context).colorScheme.onSurface),
                     ),
                     _timePicker(
                       theme,
@@ -144,7 +144,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
                     icon: const Icon(Icons.play_arrow_rounded),
                     label: const Text('Start rest'),
                     style: FilledButton.styleFrom(
-                      backgroundColor: AppTheme.primary,
+                      backgroundColor: Theme.of(context).colorScheme.primary,
                       foregroundColor: AppTheme.background,
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                     ),
@@ -162,7 +162,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
   Widget _timePicker(ThemeData theme, {required int value, required int max, required String label, required ValueChanged<int> onChanged}) {
     return Column(
       children: [
-        Text(label, style: theme.textTheme.labelMedium?.copyWith(color: AppTheme.textMuted)),
+        Text(label, style: theme.textTheme.labelMedium?.copyWith(color: Theme.of(context).colorScheme.outline)),
         const SizedBox(height: 8),
         Row(
           mainAxisSize: MainAxisSize.min,
@@ -170,7 +170,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
             IconButton.filled(
               onPressed: value > 0 ? () => onChanged(value - 1) : null,
               icon: const Icon(Icons.remove_rounded),
-              style: IconButton.styleFrom(backgroundColor: AppTheme.surfaceVariant, foregroundColor: AppTheme.textPrimary),
+              style: IconButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest, foregroundColor: Theme.of(context).colorScheme.onSurface),
             ),
             SizedBox(
               width: 56,
@@ -178,7 +178,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
                 value.toString().padLeft(2, '0'),
                 textAlign: TextAlign.center,
                 style: theme.textTheme.headlineMedium?.copyWith(
-                  color: AppTheme.textPrimary,
+                  color: Theme.of(context).colorScheme.onSurface,
                   fontWeight: FontWeight.w700,
                   fontFeatures: [const FontFeature.tabularFigures()],
                 ),
@@ -187,7 +187,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
             IconButton.filled(
               onPressed: value < max ? () => onChanged(value + 1) : null,
               icon: const Icon(Icons.add_rounded),
-              style: IconButton.styleFrom(backgroundColor: AppTheme.surfaceVariant, foregroundColor: AppTheme.textPrimary),
+              style: IconButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest, foregroundColor: Theme.of(context).colorScheme.onSurface),
             ),
           ],
         ),

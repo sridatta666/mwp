@@ -98,13 +98,13 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
     return await showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text(title, style: TextStyle(color: AppTheme.textPrimary)),
-        content: Text(content, style: TextStyle(color: AppTheme.textSecondary)),
+        title: Text(title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+        content: Text(content, style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant)),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context, false), child: Text("Cancel", style: TextStyle(color: AppTheme.textSecondary))),
-          TextButton(onPressed: () => Navigator.pop(context, true), child: Text("Delete", style: TextStyle(color: AppTheme.accent, fontWeight: FontWeight.w600))),
+          TextButton(onPressed: () => Navigator.pop(context, false), child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))),
+          TextButton(onPressed: () => Navigator.pop(context, true), child: Text("Delete", style: TextStyle(color: Theme.of(context).colorScheme.secondary, fontWeight: FontWeight.w600))),
         ],
       ),
     ) ?? false;
@@ -115,21 +115,21 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        backgroundColor: AppTheme.surface,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        title: Text("New program", style: TextStyle(color: AppTheme.textPrimary)),
+        title: Text("New program", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
         content: TextField(
           controller: titleController,
-          style: TextStyle(color: AppTheme.textPrimary),
+          style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
           decoration: InputDecoration(
             labelText: "Program title",
-            labelStyle: TextStyle(color: AppTheme.textMuted),
-            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.surfaceVariant)),
-            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: AppTheme.primary)),
+            labelStyle: TextStyle(color: Theme.of(context).colorScheme.outline),
+            enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.surfaceContainerHighest)),
+            focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Theme.of(context).colorScheme.primary)),
           ),
         ),
         actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel", style: TextStyle(color: AppTheme.textSecondary))),
+          TextButton(onPressed: () => Navigator.pop(context), child: Text("Cancel", style: TextStyle(color: Theme.of(context).colorScheme.onSurfaceVariant))),
           TextButton(
             onPressed: () async {
               if (titleController.text.isEmpty) return;
@@ -150,7 +150,7 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
                 if (mounted) ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $e")));
               }
             },
-            child: Text("Create", style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w600)),
+            child: Text("Create", style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w600)),
           ),
         ],
       ),
@@ -160,13 +160,13 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("Admin"),
         backgroundColor: Colors.transparent,
         bottom: TabBar(
           controller: _tabController,
-          indicatorColor: AppTheme.primary,
+          indicatorColor: Theme.of(context).colorScheme.primary,
           tabs: const [
             Tab(text: "Programs"),
             Tab(text: "Workouts"),
@@ -175,7 +175,7 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: _handleAdd,
-        backgroundColor: AppTheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: AppTheme.background,
         child: const Icon(Icons.add_rounded),
       ),
@@ -202,16 +202,16 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
         return GlassCard(
           margin: const EdgeInsets.symmetric(vertical: 6),
           child: ListTile(
-            title: Text(program.title, style: TextStyle(color: AppTheme.textPrimary)),
-            subtitle: Text("${program.totalWeeks} weeks · ${program.difficulty}", style: TextStyle(color: AppTheme.textMuted)),
+            title: Text(program.title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+            subtitle: Text("${program.totalWeeks} weeks · ${program.difficulty}", style: TextStyle(color: Theme.of(context).colorScheme.outline)),
             trailing: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
                 IconButton(
-                  icon: Icon(Icons.delete_rounded, color: AppTheme.accent),
+                  icon: Icon(Icons.delete_rounded, color: Theme.of(context).colorScheme.secondary),
                   onPressed: () => _deleteProgram(program.id),
                 ),
-                Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textMuted, size: 14),
+                Icon(Icons.arrow_forward_ios_rounded, color: Theme.of(context).colorScheme.outline, size: 14),
               ],
             ),
             onTap: () {
@@ -234,12 +234,12 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
           child: ListTile(
             leading: Icon(
               workout.type == 'sequence' ? Icons.playlist_play_rounded : Icons.videocam_rounded,
-              color: AppTheme.primary,
+              color: Theme.of(context).colorScheme.primary,
             ),
-            title: Text(workout.title, style: TextStyle(color: AppTheme.textPrimary)),
-            subtitle: Text("${workout.duration} min · ${workout.difficulty}", style: TextStyle(color: AppTheme.textMuted)),
+            title: Text(workout.title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+            subtitle: Text("${workout.duration} min · ${workout.difficulty}", style: TextStyle(color: Theme.of(context).colorScheme.outline)),
             trailing: IconButton(
-              icon: Icon(Icons.delete_rounded, color: AppTheme.accent),
+              icon: Icon(Icons.delete_rounded, color: Theme.of(context).colorScheme.secondary),
               onPressed: () => _deleteWorkout(workout.id),
             ),
           ),
@@ -321,17 +321,17 @@ class _ProgramEditorState extends State<ProgramEditor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(title: Text(widget.program.title), backgroundColor: Colors.transparent),
       floatingActionButton: FloatingActionButton(
         onPressed: _addDay,
-        backgroundColor: AppTheme.primary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: AppTheme.background,
         child: const Icon(Icons.add_rounded),
       ),
       body: GlassPage(
         child: _isLoading
-            ? Center(child: CircularProgressIndicator(color: AppTheme.primary))
+            ? Center(child: CircularProgressIndicator(color: Theme.of(context).colorScheme.primary))
             : ListView.builder(
               padding: EdgeInsets.fromLTRB(16, 8, 16, 88 + MediaQuery.of(context).padding.bottom),
               itemCount: _programDays.length,
@@ -346,16 +346,16 @@ class _ProgramEditorState extends State<ProgramEditor> {
                       children: [
                         Text(
                           "Day ${day.dayNumber} (Week ${(day.dayNumber / 7).ceil()})",
-                          style: TextStyle(color: AppTheme.primary, fontWeight: FontWeight.w700),
+                          style: TextStyle(color: Theme.of(context).colorScheme.primary, fontWeight: FontWeight.w700),
                         ),
                         const SizedBox(height: 12),
                         Row(
                           children: [
-                            Text("Rest day?", style: TextStyle(color: AppTheme.textPrimary)),
+                            Text("Rest day?", style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                             Switch(
                               value: day.isRestDay,
                               onChanged: (val) => _updateDay(day.id, day.workoutIds, val),
-                              activeThumbColor: AppTheme.primary,
+                              activeThumbColor: Theme.of(context).colorScheme.primary,
                             ),
                           ],
                         ),
@@ -368,18 +368,18 @@ class _ProgramEditorState extends State<ProgramEditor> {
                                     Expanded(
                                       child: DropdownButtonFormField<String>(
                                         initialValue: _allWorkouts.any((w) => w.id == day.workoutIds[i]) ? day.workoutIds[i] : null,
-                                        dropdownColor: AppTheme.surfaceVariant,
+                                        dropdownColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                                         isExpanded: true,
                                         decoration: InputDecoration(
                                           labelText: "Workout ${i + 1}",
-                                          labelStyle: TextStyle(color: AppTheme.textMuted),
+                                          labelStyle: TextStyle(color: Theme.of(context).colorScheme.outline),
                                           filled: true,
-                                          fillColor: AppTheme.surface,
+                                          fillColor: Theme.of(context).colorScheme.surface,
                                         ),
                                         items: _allWorkouts
                                             .map((w) => DropdownMenuItem(
                                                   value: w.id,
-                                                  child: Text(w.title, style: TextStyle(color: AppTheme.textPrimary)),
+                                                  child: Text(w.title, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                                                 ))
                                             .toList(),
                                         onChanged: (newId) {
@@ -391,7 +391,7 @@ class _ProgramEditorState extends State<ProgramEditor> {
                                       ),
                                     ),
                                     IconButton(
-                                      icon: Icon(Icons.remove_circle_rounded, color: AppTheme.accent),
+                                      icon: Icon(Icons.remove_circle_rounded, color: Theme.of(context).colorScheme.secondary),
                                       onPressed: () {
                                         final updated = List<String>.from(day.workoutIds)..removeAt(i);
                                         _updateDay(day.id, updated, false);

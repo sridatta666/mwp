@@ -12,4 +12,10 @@ class SettingsService {
   Future<void> setNotificationsEnabled(bool value) async {
     await _box.put(_keyNotifications, value);
   }
+
+  bool get isDarkMode => _box.get('is_dark_mode', defaultValue: true) as bool;
+
+  Future<void> setDarkMode(bool value) async {
+    await _box.put('is_dark_mode', value);
+  }
 }

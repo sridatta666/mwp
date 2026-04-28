@@ -7,11 +7,11 @@ import '../../core/theme.dart';
 import '../../core/glass_widgets.dart';
 
 /// Max retries for auth when a connection/network error occurs.
-const int _kConnectionRetryCount = 3;
-const Duration _kConnectionRetryDelay = Duration(seconds: 2);
+int _kConnectionRetryCount = 3;
+Duration _kConnectionRetryDelay = Duration(seconds: 2);
 
 class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+  LoginScreen({super.key});
 
   @override
   State<LoginScreen> createState() => _LoginScreenState();
@@ -40,7 +40,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text.trim();
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Please enter email and password.")),
+        SnackBar(content: Text("Please enter email and password.")),
       );
       return;
     }
@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
             e.code == 'email_not_confirmed') {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: const Text(
+              content: Text(
                 "Please confirm your email. Check your inbox and click the confirmation link, then try again.",
               ),
               action: SnackBarAction(
@@ -97,7 +97,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
-                  "Connection problem. Retrying (${attempt}/$_kConnectionRetryCount)…",
+                  "Connection problem. Retrying ($attempt/$_kConnectionRetryCount)…",
                 ),
               ),
             );
@@ -109,7 +109,7 @@ class _LoginScreenState extends State<LoginScreen> {
         setState(() => _isLoading = false);
         if (_isConnectionError(e)) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
+            SnackBar(
               content: Text(
                 "Connection problem. Check your internet connection and try again. If the issue continues, the server may be temporarily unavailable.",
               ),
@@ -136,7 +136,7 @@ class _LoginScreenState extends State<LoginScreen> {
       );
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Confirmation email sent. Check your inbox.")),
+          SnackBar(content: Text("Confirmation email sent. Check your inbox.")),
         );
       }
     } on AuthException catch (e) {
@@ -163,7 +163,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (isExistingUser) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Invalid email or password.")),
+          SnackBar(content: Text("Invalid email or password.")),
         );
         return;
       }
@@ -176,7 +176,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
+          SnackBar(
             content: Text(
               "Account created. Please confirm your email, then sign in.",
             ),
@@ -188,7 +188,7 @@ class _LoginScreenState extends State<LoginScreen> {
       // User already exists = they used wrong password
       if (e.code == 'user_already_exists' || e.code == 'email_exists') {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Invalid email or password.")),
+          SnackBar(content: Text("Invalid email or password.")),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -217,98 +217,98 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: GlassPage(
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 28),
+              padding: EdgeInsets.symmetric(horizontal: 28),
               child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
+                constraints: BoxConstraints(maxWidth: 400),
                 child: GlassCard(
-                  padding: const EdgeInsets.all(24),
+                  padding: EdgeInsets.all(24),
                   child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
-                    padding: const EdgeInsets.all(24),
+                    padding: EdgeInsets.all(24),
                     decoration: BoxDecoration(
                       gradient: AppTheme.primaryGradient,
                       shape: BoxShape.circle,
                       boxShadow: [
                         BoxShadow(
-                          color: AppTheme.primary.withOpacity(0.4),
+                          color: Theme.of(context).colorScheme.primary.withOpacity(0.4),
                           blurRadius: 24,
-                          offset: const Offset(0, 8),
+                          offset: Offset(0, 8),
                         ),
                       ],
                     ),
-                    child: const Icon(Icons.fitness_center_rounded, size: 56, color: AppTheme.background),
+                    child: Icon(Icons.fitness_center_rounded, size: 56, color: AppTheme.background),
                   ),
-                  const SizedBox(height: 28),
+                  SizedBox(height: 28),
                   Text(
                     'MWP',
                     style: theme.textTheme.headlineMedium?.copyWith(
-                      color: AppTheme.textPrimary,
+                      color: Theme.of(context).colorScheme.onSurface,
                       fontWeight: FontWeight.w800,
                       letterSpacing: 1.2,
                     ),
                   ),
-                  const SizedBox(height: 8),
+                  SizedBox(height: 8),
                   Text(
                     'Sign in to continue',
-                    style: theme.textTheme.bodyMedium?.copyWith(color: AppTheme.textMuted),
+                    style: theme.textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
                   ),
-                  const SizedBox(height: 28),
+                  SizedBox(height: 28),
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
                     autocorrect: false,
-                    style: const TextStyle(color: AppTheme.textPrimary),
-                    decoration: const InputDecoration(
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    decoration: InputDecoration(
                       labelText: 'Email',
-                      prefixIcon: Icon(Icons.email_outlined, color: AppTheme.textMuted),
+                      prefixIcon: Icon(Icons.email_outlined, color: Theme.of(context).colorScheme.outline),
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20),
                   TextField(
                     controller: _passwordController,
                     obscureText: true,
-                    style: const TextStyle(color: AppTheme.textPrimary),
-                    decoration: const InputDecoration(
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    decoration: InputDecoration(
                       labelText: 'Password',
-                      prefixIcon: Icon(Icons.lock_outline_rounded, color: AppTheme.textMuted),
+                      prefixIcon: Icon(Icons.lock_outline_rounded, color: Theme.of(context).colorScheme.outline),
                     ),
                   ),
-                  const SizedBox(height: 10),
+                  SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
                       onPressed: () => context.push('/forgot-password'),
                       child: Text(
                         'Forgot password?',
-                        style: TextStyle(color: AppTheme.primary.withOpacity(0.9)),
+                        style: TextStyle(color: Theme.of(context).colorScheme.primary.withOpacity(0.9)),
                       ),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  SizedBox(height: 16),
                   SizedBox(
                     width: double.infinity,
                     height: 56,
                     child: ElevatedButton(
                       onPressed: _isLoading ? null : _signIn,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primary,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
                         foregroundColor: AppTheme.background,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                       ),
                       child: _isLoading
-                          ? const SizedBox(
+                          ? SizedBox(
                               width: 24,
                               height: 24,
                               child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.background),
                             )
-                          : const Text('Login / Sign up'),
+                          : Text('Login / Sign up'),
                     ),
                   ),
                     ],

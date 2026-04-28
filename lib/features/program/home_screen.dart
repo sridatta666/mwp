@@ -79,16 +79,16 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     if (_isLoading) {
       return Scaffold(
-        backgroundColor: AppTheme.background,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              const CircularProgressIndicator(color: AppTheme.primary),
+              CircularProgressIndicator(color: Theme.of(context).colorScheme.primary),
               const SizedBox(height: 16),
               Text(
                 'Loading...',
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: AppTheme.textSecondary),
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
               ),
             ],
           ),
@@ -104,7 +104,7 @@ class _HomeScreenState extends State<HomeScreen> {
     final favoritePrograms = _allPrograms.where((p) => _favoriteProgramIds.contains(p.id)).toList();
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: GlassPage(
         child: SafeArea(
           child: RefreshIndicator(
@@ -112,13 +112,13 @@ class _HomeScreenState extends State<HomeScreen> {
               await _fetchHomeData();
               _loadFavorites();
             },
-            color: AppTheme.primary,
+            color: Theme.of(context).colorScheme.primary,
             child: CustomScrollView(
             slivers: [
               SliverAppBar(
                 floating: true,
                 elevation: 0,
-                backgroundColor: AppTheme.background,
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 titleSpacing: 16,
                 title: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -126,7 +126,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Text(
                       'Mind and Weight Project',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textMuted,
+                        color: Theme.of(context).colorScheme.outline,
                         letterSpacing: 0.4,
                       ),
                     ),
@@ -134,7 +134,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       'Discover',
                       style: theme.textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.w800,
-                        color: AppTheme.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ],
@@ -146,8 +146,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       icon: const Icon(Icons.person_rounded),
                       onPressed: () => context.push('/profile'),
                       style: IconButton.styleFrom(
-                        backgroundColor: AppTheme.surfaceVariant,
-                        foregroundColor: AppTheme.textPrimary,
+                        backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+                        foregroundColor: Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -160,21 +160,21 @@ class _HomeScreenState extends State<HomeScreen> {
                   padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
                   child: Container(
                     decoration: BoxDecoration(
-                      color: AppTheme.surfaceVariant,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(color: Colors.white.withOpacity(0.04)),
                     ),
                     child: TextField(
                       onChanged: (v) => setState(() => _searchQuery = v.trim()),
-                      style: TextStyle(color: AppTheme.textPrimary),
+                      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                       decoration: InputDecoration(
                         hintText: 'Search workouts, programs, difficulty',
-                        hintStyle: TextStyle(color: AppTheme.textMuted),
-                        prefixIcon: Icon(Icons.search_rounded, color: AppTheme.textMuted),
+                        hintStyle: TextStyle(color: Theme.of(context).colorScheme.outline),
+                        prefixIcon: Icon(Icons.search_rounded, color: Theme.of(context).colorScheme.outline),
                         suffixIcon: _searchQuery.isNotEmpty
                             ? IconButton(
                                 icon: const Icon(Icons.close_rounded),
-                                color: AppTheme.textMuted,
+                                color: Theme.of(context).colorScheme.outline,
                                 onPressed: () => setState(() => _searchQuery = ''),
                               )
                             : null,
@@ -321,7 +321,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           child: Center(
                             child: Text(
                               _searchQuery.isEmpty ? 'No programs' : 'No matching programs',
-                              style: theme.textTheme.bodyMedium?.copyWith(color: AppTheme.textMuted),
+                              style: theme.textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
                             ),
                           ),
                         )
@@ -365,11 +365,11 @@ class _HomeScreenState extends State<HomeScreen> {
       label: Text(label),
       selected: selected,
       onSelected: (_) => setState(() => _difficultyFilter = selected ? null : value),
-      backgroundColor: AppTheme.surfaceVariant,
-      selectedColor: AppTheme.primary.withOpacity(0.3),
-      checkmarkColor: AppTheme.primary,
+      backgroundColor: Theme.of(context).colorScheme.surfaceContainerHighest,
+      selectedColor: Theme.of(context).colorScheme.primary.withOpacity(0.3),
+      checkmarkColor: Theme.of(context).colorScheme.primary,
       labelStyle: TextStyle(
-        color: selected ? AppTheme.primary : AppTheme.textSecondary,
+        color: selected ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.onSurfaceVariant,
         fontWeight: selected ? FontWeight.w600 : FontWeight.normal,
       ),
     );
@@ -385,13 +385,13 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               title,
               style: theme.textTheme.titleMedium?.copyWith(
-                color: AppTheme.textPrimary,
+                color: Theme.of(context).colorScheme.onSurface,
                 fontWeight: FontWeight.w700,
               ),
             ),
             Text(
               subtitle,
-              style: theme.textTheme.bodySmall?.copyWith(color: AppTheme.textMuted),
+              style: theme.textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.outline),
             ),
           ],
         ),
@@ -439,7 +439,7 @@ class _WorkoutCard extends StatelessWidget {
                 CachedNetworkImage(
                   imageUrl: BunnyService.getThumbnailUrl(_thumbnailVideoId()),
                   fit: BoxFit.cover,
-                  errorWidget: (_, __, ___) => Container(color: AppTheme.surface),
+                  errorWidget: (_, _, _) => Container(color: Theme.of(context).colorScheme.surface),
                 ),
                 DecoratedBox(
                   decoration: BoxDecoration(
@@ -464,7 +464,7 @@ class _WorkoutCard extends StatelessWidget {
                       ),
                       child: Icon(
                         isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                        color: isFavorite ? AppTheme.accent : Colors.white,
+                        color: isFavorite ? Theme.of(context).colorScheme.secondary : Colors.white,
                         size: 18,
                       ),
                     ),
@@ -481,7 +481,7 @@ class _WorkoutCard extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
                           decoration: BoxDecoration(
-                            color: AppTheme.primary.withOpacity(0.9),
+                            color: Theme.of(context).colorScheme.primary.withOpacity(0.9),
                             borderRadius: BorderRadius.circular(8),
                           ),
                           child: Text(
@@ -546,7 +546,7 @@ class _FeaturedBanner extends StatelessWidget {
           gradient: AppTheme.heroGradient,
           boxShadow: [
             BoxShadow(
-              color: AppTheme.primary.withOpacity(0.25),
+              color: Theme.of(context).colorScheme.primary.withOpacity(0.25),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -624,7 +624,7 @@ class _ProgramCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            color: AppTheme.surfaceVariant,
+            color: Theme.of(context).colorScheme.surfaceContainerHighest,
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.2),
@@ -646,7 +646,7 @@ class _ProgramCard extends StatelessWidget {
                       CachedNetworkImage(
                         imageUrl: program.imageUrl!,
                         fit: BoxFit.cover,
-                        errorWidget: (_, __, ___) => Container(color: AppTheme.surface),
+                        errorWidget: (_, _, _) => Container(color: Theme.of(context).colorScheme.surface),
                       )
                     else
                       Container(
@@ -655,12 +655,12 @@ class _ProgramCard extends StatelessWidget {
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                             colors: [
-                              AppTheme.surface,
-                              AppTheme.primary.withOpacity(0.18),
+                              Theme.of(context).colorScheme.surface,
+                              Theme.of(context).colorScheme.primary.withOpacity(0.18),
                             ],
                           ),
                         ),
-                        child: Icon(Icons.fitness_center_rounded, size: 32, color: AppTheme.primary.withOpacity(0.55)),
+                        child: Icon(Icons.fitness_center_rounded, size: 32, color: Theme.of(context).colorScheme.primary.withOpacity(0.55)),
                       ),
                     Positioned(
                       top: 6,
@@ -675,7 +675,7 @@ class _ProgramCard extends StatelessWidget {
                           ),
                           child: Icon(
                             isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                            color: isFavorite ? AppTheme.accent : Colors.white,
+                            color: isFavorite ? Theme.of(context).colorScheme.secondary : Colors.white,
                             size: 18,
                           ),
                         ),
@@ -693,7 +693,7 @@ class _ProgramCard extends StatelessWidget {
                     Text(
                       program.title,
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppTheme.textPrimary,
+                        color: Theme.of(context).colorScheme.onSurface,
                         fontWeight: FontWeight.w700,
                       ),
                       maxLines: 1,
@@ -703,7 +703,7 @@ class _ProgramCard extends StatelessWidget {
                     Text(
                       '${program.totalWeeks} weeks',
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: AppTheme.textMuted,
+                        color: Theme.of(context).colorScheme.outline,
                         fontSize: 11,
                       ),
                     ),

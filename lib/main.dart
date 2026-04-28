@@ -76,15 +76,15 @@ initialLocation: '/',
         
     GoRoute(
       path: '/login',
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => LoginScreen(),
     ),
     GoRoute(
       path: '/forgot-password',
-      builder: (context, state) => const ForgotPasswordScreen(),
+      builder: (context, state) => ForgotPasswordScreen(),
     ),
     GoRoute(
       path: '/reset-password',
-      builder: (context, state) => const ResetPasswordScreen(),
+      builder: (context, state) => ResetPasswordScreen(),
     ),
 
     GoRoute(
@@ -139,15 +139,21 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: _router,
-      title: 'MWP',
-      debugShowCheckedModeBanner: false,
-      
-      // APPLY THE THEME HERE
-      theme: AppTheme.darkTheme, 
-      darkTheme: AppTheme.darkTheme,
-      themeMode: ThemeMode.dark,
+    return ValueListenableBuilder(
+      valueListenable: Hive.box('settings').listenable(keys: ['is_dark_mode']),
+      builder: (context, box, child) {
+        final isDarkMode = box.get('is_dark_mode', defaultValue: true) as bool;
+        return MaterialApp.router(
+          routerConfig: _router,
+          title: 'MWP',
+          debugShowCheckedModeBanner: false,
+          
+          // APPLY THE THEME HERE
+          theme: AppTheme.lightTheme, 
+          darkTheme: AppTheme.darkTheme,
+          themeMode: isDarkMode ? ThemeMode.dark : ThemeMode.light,
+        );
+      },
     );
   }
 }

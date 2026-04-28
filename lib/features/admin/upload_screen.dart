@@ -246,7 +246,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         title: const Text("Upload Workout"),
         backgroundColor: Colors.transparent,
@@ -269,10 +269,10 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                 Expanded(
                   child: DropdownButtonFormField<String>(
                     initialValue: _difficulty,
-                  dropdownColor: AppTheme.surfaceVariant,
+                  dropdownColor: Theme.of(context).colorScheme.surfaceContainerHighest,
                   decoration: _inputDecoration("Difficulty"),
                     items: ["Beginner", "Intermediate", "Advanced"]
-                        .map((d) => DropdownMenuItem(value: d, child: Text(d, style: TextStyle(color: AppTheme.textPrimary))))
+                        .map((d) => DropdownMenuItem(value: d, child: Text(d, style: TextStyle(color: Theme.of(context).colorScheme.onSurface))))
                         .toList(),
                     onChanged: (v) => setState(() => _difficulty = v!),
                   ),
@@ -284,12 +284,12 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
             
             // 2. Type Selector
              DropdownButtonFormField<String>(
-              value: _workoutType,
-              dropdownColor: AppTheme.surfaceVariant,
+              initialValue: _workoutType,
+              dropdownColor: Theme.of(context).colorScheme.surfaceContainerHighest,
               decoration: _inputDecoration("Workout Type"),
               items: [
-                DropdownMenuItem(value: 'standard', child: Text("Standard Video", style: TextStyle(color: AppTheme.textPrimary))),
-                DropdownMenuItem(value: 'sequence', child: Text("Clip Sequence", style: TextStyle(color: AppTheme.textPrimary))),
+                DropdownMenuItem(value: 'standard', child: Text("Standard Video", style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
+                DropdownMenuItem(value: 'sequence', child: Text("Clip Sequence", style: TextStyle(color: Theme.of(context).colorScheme.onSurface))),
               ],
               onChanged: (v) => setState(() => _workoutType = v!),
             ),
@@ -308,7 +308,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
               child: ElevatedButton(
                 onPressed: _isSaving ? null : _saveWorkout,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primary,
+                  backgroundColor: Theme.of(context).colorScheme.primary,
                   foregroundColor: AppTheme.background,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                 ),
@@ -328,7 +328,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text("Main video", style: TextStyle(color: AppTheme.textMuted, fontSize: 12, fontWeight: FontWeight.w700)),
+        Text("Main video", style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12, fontWeight: FontWeight.w700)),
         const SizedBox(height: 10),
         GestureDetector(
           onTap: _pickVideo,
@@ -341,17 +341,17 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                   ? Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.video_library_rounded, color: AppTheme.primary, size: 40),
+                        Icon(Icons.video_library_rounded, color: Theme.of(context).colorScheme.primary, size: 40),
                         const SizedBox(height: 10),
-                        Text("Tap to select video", style: TextStyle(color: AppTheme.textMuted)),
+                        Text("Tap to select video", style: TextStyle(color: Theme.of(context).colorScheme.outline)),
                       ],
                     )
                   : Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.check_circle_rounded, color: AppTheme.primary, size: 40),
+                        Icon(Icons.check_circle_rounded, color: Theme.of(context).colorScheme.primary, size: 40),
                         const SizedBox(height: 10),
-                        Text(_selectedVideo!.path.split(RegExp(r'[/\\]')).last, style: TextStyle(color: AppTheme.textPrimary)),
+                        Text(_selectedVideo!.path.split(RegExp(r'[/\\]')).last, style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                       ],
                     ),
             ),
@@ -368,7 +368,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                   ? SizedBox(width: 20, height: 20, child: CircularProgressIndicator(strokeWidth: 2, color: AppTheme.background))
                   : Icon(Icons.cloud_upload_rounded),
               label: Text(_isUploading ? "Uploading…" : "Upload to Bunny"),
-              style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primary, foregroundColor: AppTheme.background),
+              style: ElevatedButton.styleFrom(backgroundColor: Theme.of(context).colorScheme.primary, foregroundColor: AppTheme.background),
             ),
           ),
         if (_uploadedVideoId != null)
@@ -376,9 +376,9 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                Icon(Icons.check_rounded, color: AppTheme.primary),
+                Icon(Icons.check_rounded, color: Theme.of(context).colorScheme.primary),
                 const SizedBox(width: 12),
-                Expanded(child: Text("Video ID: $_uploadedVideoId", style: TextStyle(color: AppTheme.primary, fontSize: 12))),
+                Expanded(child: Text("Video ID: $_uploadedVideoId", style: TextStyle(color: Theme.of(context).colorScheme.primary, fontSize: 12))),
               ],
             ),
           ),
@@ -393,7 +393,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text("Workout clips", style: TextStyle(color: AppTheme.textMuted, fontSize: 12, fontWeight: FontWeight.w700)),
+            Text("Workout clips", style: TextStyle(color: Theme.of(context).colorScheme.outline, fontSize: 12, fontWeight: FontWeight.w700)),
             TextButton.icon(
               onPressed: _pickClip,
               icon: const Icon(Icons.add, size: 16),
@@ -406,7 +406,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
           itemCount: _clips.length,
-          separatorBuilder: (_, __) => const SizedBox(height: 10),
+          separatorBuilder: (_, _) => const SizedBox(height: 10),
           itemBuilder: (context, index) {
             final clip = _clips[index];
             final isUploaded = clip['videoId'] != null;
@@ -418,19 +418,19 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                     children: [
                       Container(
                         padding: const EdgeInsets.all(8),
-                        decoration: BoxDecoration(color: AppTheme.surface, borderRadius: BorderRadius.circular(8)),
-                        child: Text("${index + 1}", style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+                        decoration: BoxDecoration(color: Theme.of(context).colorScheme.surface, borderRadius: BorderRadius.circular(8)),
+                        child: Text("${index + 1}", style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
                       ),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text((clip['file'] as dynamic).path.split(RegExp(r'[/\\]')).last, style: TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.bold)),
+                            Text((clip['file'] as dynamic).path.split(RegExp(r'[/\\]')).last, style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                Text(isUploaded ? "Uploaded" : "Pending", style: TextStyle(color: isUploaded ? AppTheme.primary : AppTheme.accent, fontSize: 12)),
+                                Text(isUploaded ? "Uploaded" : "Pending", style: TextStyle(color: isUploaded ? Theme.of(context).colorScheme.primary : Theme.of(context).colorScheme.secondary, fontSize: 12)),
                                 if (clip['isUploading'] == true) ...[
                                   const SizedBox(width: 10),
                                   const SizedBox(width: 12, height: 12, child: CircularProgressIndicator(strokeWidth: 2)),
@@ -441,7 +441,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                         ),
                       ),
                       IconButton(
-                        icon: Icon(Icons.delete_rounded, color: AppTheme.accent),
+                        icon: Icon(Icons.delete_rounded, color: Theme.of(context).colorScheme.secondary),
                         onPressed: () => _removeClip(index),
                       ),
                     ],
@@ -452,7 +452,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                       Expanded(
                         child: TextField(
                           decoration: _inputDecoration("Title").copyWith(isDense: true, contentPadding: const EdgeInsets.all(10)),
-                          style: TextStyle(color: AppTheme.textPrimary, fontSize: 13),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13),
                           onChanged: (v) => _clips[index]['title'] = v,
                           controller: TextEditingController(text: clip['title']),
                         ),
@@ -462,7 +462,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                         width: 100,
                         child: TextField(
                           decoration: _inputDecoration("Rest (s)").copyWith(isDense: true, contentPadding: const EdgeInsets.all(10)),
-                          style: TextStyle(color: AppTheme.textPrimary, fontSize: 13),
+                          style: TextStyle(color: Theme.of(context).colorScheme.onSurface, fontSize: 13),
                           keyboardType: TextInputType.number,
                           onChanged: (v) => _clips[index]['restDuration'] = int.tryParse(v) ?? 30,
                           controller: TextEditingController(text: clip['restDuration'].toString()),
@@ -489,7 +489,7 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
       controller: controller,
       maxLines: maxLines,
       keyboardType: isNumber ? TextInputType.number : TextInputType.text,
-      style: TextStyle(color: AppTheme.textPrimary),
+      style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
       decoration: _inputDecoration(label),
     );
   }
@@ -497,11 +497,11 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
   InputDecoration _inputDecoration(String label) {
     return InputDecoration(
       labelText: label,
-      labelStyle: TextStyle(color: AppTheme.textMuted),
+      labelStyle: TextStyle(color: Theme.of(context).colorScheme.outline),
       filled: true,
-      fillColor: AppTheme.surfaceVariant,
+      fillColor: Theme.of(context).colorScheme.surfaceContainerHighest,
       border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: AppTheme.primary, width: 2)),
+      focusedBorder: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide(color: Theme.of(context).colorScheme.primary, width: 2)),
     );
   }
 }
