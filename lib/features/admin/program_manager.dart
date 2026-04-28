@@ -195,7 +195,7 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
 
   Widget _buildProgramList() {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.fromLTRB(12, 8, 12, 88 + MediaQuery.of(context).padding.bottom),
       itemCount: _programs.length,
       itemBuilder: (context, index) {
         final program = _programs[index];
@@ -225,7 +225,7 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
 
   Widget _buildWorkoutList() {
     return ListView.builder(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      padding: EdgeInsets.fromLTRB(12, 8, 12, 88 + MediaQuery.of(context).padding.bottom),
       itemCount: _workouts.length,
       itemBuilder: (context, index) {
         final workout = _workouts[index];
@@ -333,7 +333,7 @@ class _ProgramEditorState extends State<ProgramEditor> {
         child: _isLoading
             ? Center(child: CircularProgressIndicator(color: AppTheme.primary))
             : ListView.builder(
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
+              padding: EdgeInsets.fromLTRB(16, 8, 16, 88 + MediaQuery.of(context).padding.bottom),
               itemCount: _programDays.length,
               itemBuilder: (context, index) {
                 final day = _programDays[index];
