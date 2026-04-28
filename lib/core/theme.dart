@@ -4,38 +4,50 @@ import 'package:google_fonts/google_fonts.dart';
 
 class AppTheme {
   // ——— Brand Colors (Modern fitness / energy vibe) ———
-  static const Color primary = Color(0xFF00D9A5);      // Emerald / teal
-  static const Color primaryDark = Color(0xFF00B386);
-  static const Color accent = Color(0xFFFF6B35);       // Warm coral for CTAs
-  static const Color background = Color(0xFF0A0A0F);
-  static const Color surface = Color(0xFF14141F);
-  static const Color surfaceVariant = Color(0xFF1C1C28);
-  static const Color textPrimary = Color(0xFFF5F5F7);
-  static const Color textSecondary = Color(0xFFA1A1AA);
-  static const Color textMuted = Color(0xFF71717A);
+  static const Color primary = Color(0xFF7C8CFF);      // Modern indigo
+  static const Color primaryDark = Color(0xFF5D6CDB);
+  static const Color accent = Color(0xFF52D6C5);       // Soft teal accent
+  static const Color background = Color(0xFF070A13);
+  static const Color surface = Color(0xFF11182A);
+  static const Color surfaceVariant = Color(0xFF172136);
+  static const Color glassStroke = Color(0x2EFFFFFF);
+  static const Color glassHighlight = Color(0x14FFFFFF);
+  static const Color textPrimary = Color(0xFFF3F6FF);
+  static const Color textSecondary = Color(0xFFB2BED8);
+  static const Color textMuted = Color(0xFF7F8AA7);
 
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color(0xFF00D9A5), Color(0xFF00A3FF)],
+    colors: [Color(0xFF7C8CFF), Color(0xFF5ED0FF)],
   );
   static const LinearGradient heroGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
     colors: [
       Color(0xFF00D9A5),
-      Color(0xFF00A3FF),
-      Color(0xFF7C3AED),
+      Color(0xFF5ED0FF),
+      Color(0xFF9A7CFF),
     ],
   );
   static const LinearGradient surfaceGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
     colors: [
-      Color(0xFF1A1A24),
-      Color(0xFF0A0A0F),
+      Color(0xFF151D30),
+      Color(0xFF070A13),
     ],
+  );
+  static const LinearGradient pageGradient = LinearGradient(
+    begin: Alignment.topLeft,
+    end: Alignment.bottomRight,
+    colors: [
+      Color(0xFF0F1730),
+      Color(0xFF070A13),
+      Color(0xFF151C34),
+    ],
+    stops: [0.0, 0.55, 1.0],
   );
 
   static ThemeData get darkTheme {
@@ -53,13 +65,13 @@ class AppTheme {
       colorScheme: ColorScheme.dark(
         primary: primary,
         onPrimary: background,
-        primaryContainer: primary.withOpacity(0.2),
+        primaryContainer: primary.withValues(alpha: 0.2),
         secondary: accent,
         onSecondary: background,
         surface: surface,
         onSurface: textPrimary,
         surfaceContainerHighest: surfaceVariant,
-        error: const Color(0xFFEF4444),
+        error: const Color(0xFFFF6A8B),
         onError: Colors.white,
         outline: textMuted,
       ),
@@ -77,9 +89,12 @@ class AppTheme {
         ),
       ),
       cardTheme: CardThemeData(
-        color: surface,
+        color: surface.withValues(alpha: 0.86),
         elevation: 0,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+          side: const BorderSide(color: glassStroke),
+        ),
         margin: EdgeInsets.zero,
         clipBehavior: Clip.antiAlias,
       ),
@@ -111,12 +126,12 @@ class AppTheme {
       ),
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: surfaceVariant,
+        fillColor: surfaceVariant.withValues(alpha: 0.8),
         contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(16)),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
-          borderSide: const BorderSide(color: Colors.transparent),
+          borderSide: const BorderSide(color: glassStroke),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(16),
@@ -129,7 +144,7 @@ class AppTheme {
       tabBarTheme: TabBarThemeData(
         indicator: BoxDecoration(
           borderRadius: BorderRadius.circular(8),
-          color: primary.withOpacity(0.3),
+          color: primary.withValues(alpha: 0.26),
         ),
         indicatorSize: TabBarIndicatorSize.tab,
         labelColor: textPrimary,
@@ -146,7 +161,7 @@ class AppTheme {
         activeTrackColor: primary,
         inactiveTrackColor: surfaceVariant,
         thumbColor: primary,
-        overlayColor: primary.withOpacity(0.2),
+        overlayColor: primary.withValues(alpha: 0.2),
         trackHeight: 3,
       ),
       progressIndicatorTheme: const ProgressIndicatorThemeData(
@@ -160,7 +175,7 @@ class AppTheme {
         space: 1,
       ),
       snackBarTheme: SnackBarThemeData(
-        backgroundColor: surfaceVariant,
+        backgroundColor: surfaceVariant.withValues(alpha: 0.95),
         contentTextStyle: textTheme.bodyMedium?.copyWith(color: textPrimary),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         behavior: SnackBarBehavior.floating,

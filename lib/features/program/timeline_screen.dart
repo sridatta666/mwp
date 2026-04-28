@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/supabase_service.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 
 
 class TimelineScreen extends StatefulWidget {
@@ -35,7 +36,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
       // 1. Fetch Program Details
       final programData = await Supabase.instance.client
           .from('programs')
-          .select('title, description') 
+          .select('title, description, image_url')
           .eq('id', widget.programId)
           .single();
 
@@ -49,6 +50,8 @@ class _TimelineScreenState extends State<TimelineScreen> {
           _programTitle = programData['title'];
           _completedIds = completed;
           _programDesc = programData['description'] ?? "";
+          final image = programData['image_url']?.toString();
+          _programImage = (image != null && image.trim().isNotEmpty) ? image : null;
           _isLoading = false;
         });
       }
@@ -63,13 +66,14 @@ class _TimelineScreenState extends State<TimelineScreen> {
     if (_isLoading) {
       return Scaffold(
         backgroundColor: AppTheme.background,
-        body: Center(child: CircularProgressIndicator(color: AppTheme.primary)),
+        body: GlassPage(child: Center(child: CircularProgressIndicator(color: AppTheme.primary))),
       );
     }
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: CustomScrollView(
+      body: GlassPage(
+        child: CustomScrollView(
         slivers: [
           SliverAppBar(
             expandedHeight: 240,
@@ -187,6 +191,7 @@ class _TimelineScreenState extends State<TimelineScreen> {
           ),
           const SliverToBoxAdapter(child: SizedBox(height: 48)),
         ],
+        ),
       ),
     );
   }
@@ -194,134 +199,170 @@ class _TimelineScreenState extends State<TimelineScreen> {
   Widget _buildDayCard(ProgramDay day) {
     bool isRest = day.isRestDay;
     bool hasWorkouts = day.workoutIds.isNotEmpty;
+    bool hasMultiple = day.workoutIds.length > 1;
     bool isComplete = !isRest &&
         hasWorkouts &&
         day.workoutIds.every((id) => _completedIds.contains(id));
 
-    return GestureDetector(
-      onTap: () async {
-        if (isRest) return;
-        if (!hasWorkouts) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No workout assigned yet.")));
-          return;
-        }
-        if (day.workoutIds.length == 1) {
-          await context.push('/workout/${day.workoutIds.first}');
-        } else {
-          await _showDayWorkoutPicker(day);
-        }
-        _fetchSchedule();
-      },
-      child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
-        padding: const EdgeInsets.all(18),
-        decoration: BoxDecoration(
-          color: AppTheme.surfaceVariant,
-          borderRadius: BorderRadius.circular(18),
-          border: isComplete
-              ? Border.all(color: AppTheme.primary.withOpacity(0.6), width: 2)
-              : (isRest ? Border.all(color: AppTheme.textMuted.withOpacity(0.3)) : null),
-        ),
-        child: Row(
-          children: [
-            Container(
-              width: 52,
-              height: 52,
-              decoration: BoxDecoration(
-                color: isRest ? Colors.transparent : AppTheme.primary.withOpacity(0.2),
-                shape: BoxShape.circle,
-                border: isRest ? Border.all(color: AppTheme.textMuted) : null,
-              ),
-              child: Center(
-                child: Icon(
-                  isRest ? Icons.nightlight_round_rounded
-                      : (isComplete ? Icons.check_rounded : (day.isPremium ? Icons.lock_rounded : Icons.play_arrow_rounded)),
-                  color: isRest ? AppTheme.textMuted : (day.isPremium ? AppTheme.accent : AppTheme.primary),
-                  size: 26,
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 6),
+      padding: const EdgeInsets.all(18),
+      decoration: BoxDecoration(
+        color: AppTheme.surfaceVariant,
+        borderRadius: BorderRadius.circular(18),
+        border: isComplete
+            ? Border.all(color: AppTheme.primary.withOpacity(0.6), width: 2)
+            : (isRest ? Border.all(color: AppTheme.textMuted.withOpacity(0.3)) : null),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                width: 52,
+                height: 52,
+                decoration: BoxDecoration(
+                  color: isRest ? Colors.transparent : AppTheme.primary.withOpacity(0.2),
+                  shape: BoxShape.circle,
+                  border: isRest ? Border.all(color: AppTheme.textMuted) : null,
+                ),
+                child: Center(
+                  child: Icon(
+                    isRest ? Icons.nightlight_round_rounded
+                        : (isComplete ? Icons.check_rounded : (day.isPremium ? Icons.lock_rounded : Icons.play_arrow_rounded)),
+                    color: isRest ? AppTheme.textMuted : (day.isPremium ? AppTheme.accent : AppTheme.primary),
+                    size: 26,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(width: 16),
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "Day ${day.dayNumber}",
-                    style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                      color: isRest ? AppTheme.textMuted : AppTheme.primary,
-                      fontWeight: FontWeight.w700,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    isRest ? "Rest Day" : day.title,
-                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                      color: isComplete ? AppTheme.textMuted : AppTheme.textPrimary,
-                      fontWeight: FontWeight.w600,
-                      decoration: isComplete ? TextDecoration.lineThrough : null,
-                    ),
-                  ),
-                  if (!isRest && day.workoutIds.length > 1)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 4),
-                      child: Text(
-                        "${day.workoutIds.length} videos",
-                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                          color: AppTheme.textMuted,
-                        ),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      "Day ${day.dayNumber}",
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        color: isRest ? AppTheme.textMuted : AppTheme.primary,
+                        fontWeight: FontWeight.w700,
                       ),
                     ),
-                ],
+                    const SizedBox(height: 4),
+                    Text(
+                      isRest ? "Rest Day" : day.title,
+                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                        color: isComplete ? AppTheme.textMuted : AppTheme.textPrimary,
+                        fontWeight: FontWeight.w600,
+                        decoration: isComplete ? TextDecoration.lineThrough : null,
+                      ),
+                    ),
+                    if (!isRest && hasMultiple)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 4),
+                        child: Text(
+                          "${day.workoutIds.length} videos",
+                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: AppTheme.textMuted,
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
               ),
+              if (!isRest && !isComplete && !hasMultiple)
+                IconButton(
+                  icon: Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textMuted, size: 14),
+                  onPressed: () async => _openWorkout(day.workoutIds.first),
+                ),
+            ],
+          ),
+          if (!isRest && !hasWorkouts)
+            const Padding(
+              padding: EdgeInsets.only(top: 12),
+              child: Text("No workout assigned yet.", style: TextStyle(color: AppTheme.textMuted)),
             ),
-            if (!isRest && !isComplete)
-              Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textMuted, size: 14),
+          if (!isRest && hasMultiple) ...[
+            const SizedBox(height: 14),
+            _buildWorkoutTimeline(day),
           ],
-        ),
+        ],
       ),
     );
   }
 
-  Future<void> _showDayWorkoutPicker(ProgramDay day) async {
-    await showModalBottomSheet<void>(
-      context: context,
-      backgroundColor: AppTheme.surface,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
-      builder: (context) {
-        final items = day.workouts;
-        return SafeArea(
-          child: ListView(
-            shrinkWrap: true,
+  Widget _buildWorkoutTimeline(ProgramDay day) {
+    return Column(
+      children: [
+        for (int i = 0; i < day.workoutIds.length; i++)
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              ListTile(
-                title: Text(
-                  "Day ${day.dayNumber} workouts",
-                  style: const TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w700),
+              Column(
+                children: [
+                  Container(
+                    width: 12,
+                    height: 12,
+                    decoration: BoxDecoration(
+                      color: _completedIds.contains(day.workoutIds[i]) ? AppTheme.primary : AppTheme.textMuted,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  if (i != day.workoutIds.length - 1)
+                    Container(
+                      width: 2,
+                      height: 36,
+                      color: AppTheme.textMuted.withOpacity(0.35),
+                    ),
+                ],
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(bottom: 10),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(10),
+                    onTap: () async => _openWorkout(day.workoutIds[i]),
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        color: AppTheme.surface,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            _completedIds.contains(day.workoutIds[i])
+                                ? Icons.check_circle_rounded
+                                : (day.workouts.length > i && day.workouts[i].isPremium
+                                    ? Icons.lock_rounded
+                                    : Icons.play_arrow_rounded),
+                            color: _completedIds.contains(day.workoutIds[i]) ? AppTheme.primary : AppTheme.textSecondary,
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              day.workouts.length > i ? day.workouts[i].title : "Workout ${i + 1}",
+                              style: const TextStyle(color: AppTheme.textPrimary, fontWeight: FontWeight.w600),
+                            ),
+                          ),
+                          const Icon(Icons.arrow_forward_ios_rounded, size: 13, color: AppTheme.textMuted),
+                        ],
+                      ),
+                    ),
+                  ),
                 ),
               ),
-              for (int i = 0; i < day.workoutIds.length; i++)
-                ListTile(
-                  leading: Icon(
-                    items.length > i && items[i].isPremium ? Icons.lock_rounded : Icons.play_arrow_rounded,
-                    color: items.length > i && items[i].isPremium ? AppTheme.accent : AppTheme.primary,
-                  ),
-                  title: Text(
-                    items.length > i ? items[i].title : "Workout ${i + 1}",
-                    style: const TextStyle(color: AppTheme.textPrimary),
-                  ),
-                  trailing: const Icon(Icons.arrow_forward_ios_rounded, size: 14, color: AppTheme.textMuted),
-                  onTap: () async {
-                    Navigator.pop(context);
-                    await this.context.push('/workout/${day.workoutIds[i]}');
-                  },
-                ),
             ],
           ),
-        );
-      },
+      ],
     );
+  }
+
+  Future<void> _openWorkout(String workoutId) async {
+    await context.push('/workout/$workoutId');
+    if (mounted) {
+      _fetchSchedule();
+    }
   }
 }

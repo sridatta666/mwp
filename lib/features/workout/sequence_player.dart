@@ -1,14 +1,13 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
-import 'package:confetti/confetti.dart';
 import 'package:go_router/go_router.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../core/models.dart';
 import '../../core/bunny_service.dart';
 import '../../core/supabase_service.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 
 class SequencePlayer extends StatefulWidget {
   final Workout workout;
@@ -215,8 +214,7 @@ class _SequencePlayerState extends State<SequencePlayer> {
 
         // 2. INPUT AREA (Only when active)
         if (!_isResting && !_isLoading)
-          Container(
-            color: AppTheme.surfaceVariant,
+          GlassCard(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
@@ -253,8 +251,8 @@ class _SequencePlayerState extends State<SequencePlayer> {
         // 3. TIMELINE AREA
         Expanded(
           flex: 3,
-          child: Container(
-            color: AppTheme.background,
+          child: GlassCard(
+            margin: const EdgeInsets.only(top: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [

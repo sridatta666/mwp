@@ -4,6 +4,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/models.dart';
 import '../../core/supabase_service.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 
 class ProgramManagerScreen extends StatefulWidget {
   const ProgramManagerScreen({super.key});
@@ -40,22 +41,14 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
 
   Future<void> _fetchData() async {
     try {
-      // Fetch Programs
-      final progResponse = await Supabase.instance.client
-          .from('programs')
-          .select()
-          .order('created_at', ascending: false);
-      
-      // Fetch Workouts
-      final workResponse = await Supabase.instance.client
-          .from('workouts')
-          .select()
-          .order('created_at', ascending: false);
+      final service = SupabaseService();
+      final programs = await service.fetchAllPrograms();
+      final workouts = await service.fetchAllWorkouts();
 
       if (mounted) {
         setState(() {
-          _programs = (progResponse as List).map((e) => Program.fromJson(e)).toList();
-          _workouts = (workResponse as List).map((e) => Workout.fromJson(e)).toList();
+          _programs = programs;
+          _workouts = workouts;
           _isLoading = false;
         });
       }
@@ -186,39 +179,45 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
         foregroundColor: AppTheme.background,
         child: const Icon(Icons.add_rounded),
       ),
-      body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : TabBarView(
-              controller: _tabController,
-              children: [
-                _buildProgramList(),
-                _buildWorkoutList(),
-              ],
-            ),
+      body: GlassPage(
+        child: _isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : TabBarView(
+                controller: _tabController,
+                children: [
+                  _buildProgramList(),
+                  _buildWorkoutList(),
+                ],
+              ),
+      ),
     );
   }
 
   Widget _buildProgramList() {
     return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       itemCount: _programs.length,
       itemBuilder: (context, index) {
         final program = _programs[index];
-        return ListTile(
-          title: Text(program.title, style: TextStyle(color: AppTheme.textPrimary)),
-          subtitle: Text("${program.totalWeeks} weeks · ${program.difficulty}", style: TextStyle(color: AppTheme.textMuted)),
-          trailing: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              IconButton(
-                icon: Icon(Icons.delete_rounded, color: AppTheme.accent),
-                onPressed: () => _deleteProgram(program.id),
-              ),
-              Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textMuted, size: 14),
-            ],
+        return GlassCard(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          child: ListTile(
+            title: Text(program.title, style: TextStyle(color: AppTheme.textPrimary)),
+            subtitle: Text("${program.totalWeeks} weeks · ${program.difficulty}", style: TextStyle(color: AppTheme.textMuted)),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                IconButton(
+                  icon: Icon(Icons.delete_rounded, color: AppTheme.accent),
+                  onPressed: () => _deleteProgram(program.id),
+                ),
+                Icon(Icons.arrow_forward_ios_rounded, color: AppTheme.textMuted, size: 14),
+              ],
+            ),
+            onTap: () {
+              Navigator.push(context, MaterialPageRoute(builder: (_) => ProgramEditor(program: program)));
+            },
           ),
-          onTap: () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => ProgramEditor(program: program)));
-          },
         );
       },
     );
@@ -226,19 +225,23 @@ class _ProgramManagerScreenState extends State<ProgramManagerScreen> with Single
 
   Widget _buildWorkoutList() {
     return ListView.builder(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       itemCount: _workouts.length,
       itemBuilder: (context, index) {
         final workout = _workouts[index];
-        return ListTile(
-          leading: Icon(
-            workout.type == 'sequence' ? Icons.playlist_play_rounded : Icons.videocam_rounded,
-            color: AppTheme.primary,
-          ),
-          title: Text(workout.title, style: TextStyle(color: AppTheme.textPrimary)),
-          subtitle: Text("${workout.duration} min · ${workout.difficulty}", style: TextStyle(color: AppTheme.textMuted)),
-          trailing: IconButton(
-            icon: Icon(Icons.delete_rounded, color: AppTheme.accent),
-            onPressed: () => _deleteWorkout(workout.id),
+        return GlassCard(
+          margin: const EdgeInsets.symmetric(vertical: 6),
+          child: ListTile(
+            leading: Icon(
+              workout.type == 'sequence' ? Icons.playlist_play_rounded : Icons.videocam_rounded,
+              color: AppTheme.primary,
+            ),
+            title: Text(workout.title, style: TextStyle(color: AppTheme.textPrimary)),
+            subtitle: Text("${workout.duration} min · ${workout.difficulty}", style: TextStyle(color: AppTheme.textMuted)),
+            trailing: IconButton(
+              icon: Icon(Icons.delete_rounded, color: AppTheme.accent),
+              onPressed: () => _deleteWorkout(workout.id),
+            ),
           ),
         );
       },
@@ -326,17 +329,16 @@ class _ProgramEditorState extends State<ProgramEditor> {
         foregroundColor: AppTheme.background,
         child: const Icon(Icons.add_rounded),
       ),
-      body: _isLoading
-          ? Center(child: CircularProgressIndicator(color: AppTheme.primary))
-          : ListView.builder(
+      body: GlassPage(
+        child: _isLoading
+            ? Center(child: CircularProgressIndicator(color: AppTheme.primary))
+            : ListView.builder(
               padding: const EdgeInsets.fromLTRB(16, 8, 16, 88),
               itemCount: _programDays.length,
               itemBuilder: (context, index) {
                 final day = _programDays[index];
-                return Card(
-                  color: AppTheme.surfaceVariant,
+                return GlassCard(
                   margin: const EdgeInsets.symmetric(vertical: 6),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
                   child: Padding(
                     padding: const EdgeInsets.all(16),
                     child: Column(
@@ -420,6 +422,7 @@ class _ProgramEditorState extends State<ProgramEditor> {
                 );
               },
             ),
+      ),
     );
   }
 }

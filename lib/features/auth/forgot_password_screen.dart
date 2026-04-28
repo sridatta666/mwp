@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 
 /// Deep link path for password reset. Must be allowed in Supabase Dashboard →
 /// Authentication → URL Configuration → Redirect URLs (e.g. mwp://reset-password).
@@ -92,13 +93,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           onPressed: () => context.go('/login'),
         ),
       ),
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: _emailSent ? _buildSuccessView() : _buildForm(theme),
+      body: GlassPage(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: GlassCard(
+                  padding: const EdgeInsets.all(24),
+                  child: _emailSent ? _buildSuccessView() : _buildForm(theme),
+                ),
+              ),
             ),
           ),
         ),

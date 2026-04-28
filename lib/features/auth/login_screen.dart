@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:go_router/go_router.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 
 /// Max retries for auth when a connection/network error occurs.
 const int _kConnectionRetryCount = 3;
@@ -217,13 +218,16 @@ class _LoginScreenState extends State<LoginScreen> {
     final theme = Theme.of(context);
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(horizontal: 28),
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 400),
-              child: Column(
+      body: GlassPage(
+        child: SafeArea(
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(horizontal: 28),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: GlassCard(
+                  padding: const EdgeInsets.all(24),
+                  child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Container(
@@ -255,7 +259,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     'Sign in to continue',
                     style: theme.textTheme.bodyMedium?.copyWith(color: AppTheme.textMuted),
                   ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 28),
                   TextField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
@@ -276,7 +280,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       prefixIcon: Icon(Icons.lock_outline_rounded, color: AppTheme.textMuted),
                     ),
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 10),
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
@@ -307,7 +311,9 @@ class _LoginScreenState extends State<LoginScreen> {
                           : const Text('Login / Sign up'),
                     ),
                   ),
-                ],
+                    ],
+                  ),
+                ),
               ),
             ),
           ),

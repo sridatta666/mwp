@@ -6,6 +6,7 @@ import '../../core/models.dart';
 import '../../core/bunny_service.dart';
 import '../../core/theme.dart';
 import '../../core/favorites_service.dart';
+import '../../core/glass_widgets.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -96,63 +97,90 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     final theme = Theme.of(context);
-    final traditional = _filterWorkouts(_allWorkouts.where((w) => w.type == 'sequence').toList());
-    final followAlong = _filterWorkouts(_allWorkouts.where((w) => w.type == 'standard').toList());
+    final traditional = _filterWorkouts(_allWorkouts.where((w) => w.type == 'standard').toList());
+    final followAlong = _filterWorkouts(_allWorkouts.where((w) => w.type == 'sequence').toList());
     final programs = _filterPrograms(_allPrograms);
     final favoriteWorkouts = _allWorkouts.where((w) => _favoriteWorkoutIds.contains(w.id)).toList();
     final favoritePrograms = _allPrograms.where((p) => _favoriteProgramIds.contains(p.id)).toList();
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: SafeArea(
-        child: RefreshIndicator(
-          onRefresh: () async {
-            await _fetchHomeData();
-            _loadFavorites();
-          },
-          color: AppTheme.primary,
-          child: CustomScrollView(
+      body: GlassPage(
+        child: SafeArea(
+          child: RefreshIndicator(
+            onRefresh: () async {
+              await _fetchHomeData();
+              _loadFavorites();
+            },
+            color: AppTheme.primary,
+            child: CustomScrollView(
             slivers: [
               SliverAppBar(
                 floating: true,
+                elevation: 0,
                 backgroundColor: AppTheme.background,
-                title: Text(
-                  'MWP',
-                  style: theme.textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    letterSpacing: 1.2,
-                    color: AppTheme.textPrimary,
-                  ),
+                titleSpacing: 16,
+                title: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Mind and Weight Project',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textMuted,
+                        letterSpacing: 0.4,
+                      ),
+                    ),
+                    Text(
+                      'Discover',
+                      style: theme.textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: AppTheme.textPrimary,
+                      ),
+                    ),
+                  ],
                 ),
                 actions: [
-                  IconButton(
-                    icon: const Icon(Icons.person_rounded),
-                    onPressed: () => context.push('/profile'),
-                    style: IconButton.styleFrom(
-                      backgroundColor: AppTheme.surfaceVariant,
-                      foregroundColor: AppTheme.textPrimary,
+                  Padding(
+                    padding: const EdgeInsets.only(right: 12),
+                    child: IconButton(
+                      icon: const Icon(Icons.person_rounded),
+                      onPressed: () => context.push('/profile'),
+                      style: IconButton.styleFrom(
+                        backgroundColor: AppTheme.surfaceVariant,
+                        foregroundColor: AppTheme.textPrimary,
+                      ),
                     ),
                   ),
-                  const SizedBox(width: 12),
                 ],
               ),
-              SliverToBoxAdapter(child: SizedBox(height: MediaQuery.of(context).padding.top)),
 
               // Search bar
               SliverToBoxAdapter(
                 child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
-                  child: TextField(
-                    onChanged: (v) => setState(() => _searchQuery = v.trim()),
-                    style: TextStyle(color: AppTheme.textPrimary),
-                    decoration: InputDecoration(
-                      hintText: 'Search workouts & programs',
-                      hintStyle: TextStyle(color: AppTheme.textMuted),
-                      prefixIcon: Icon(Icons.search_rounded, color: AppTheme.textMuted),
-                      filled: true,
-                      fillColor: AppTheme.surfaceVariant,
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(14), borderSide: BorderSide.none),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding: const EdgeInsets.fromLTRB(16, 10, 16, 14),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: AppTheme.surfaceVariant,
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(color: Colors.white.withOpacity(0.04)),
+                    ),
+                    child: TextField(
+                      onChanged: (v) => setState(() => _searchQuery = v.trim()),
+                      style: TextStyle(color: AppTheme.textPrimary),
+                      decoration: InputDecoration(
+                        hintText: 'Search workouts, programs, difficulty',
+                        hintStyle: TextStyle(color: AppTheme.textMuted),
+                        prefixIcon: Icon(Icons.search_rounded, color: AppTheme.textMuted),
+                        suffixIcon: _searchQuery.isNotEmpty
+                            ? IconButton(
+                                icon: const Icon(Icons.close_rounded),
+                                color: AppTheme.textMuted,
+                                onPressed: () => setState(() => _searchQuery = ''),
+                              )
+                            : null,
+                        border: OutlineInputBorder(borderRadius: BorderRadius.circular(16), borderSide: BorderSide.none),
+                        contentPadding: const EdgeInsets.symmetric(horizontal: 14, vertical: 14),
+                      ),
                     ),
                   ),
                 ),
@@ -314,6 +342,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               const SliverToBoxAdapter(child: SizedBox(height: 32)),
             ],
+            ),
           ),
         ),
       ),
@@ -378,134 +407,123 @@ class _WorkoutCard extends StatelessWidget {
 
   const _WorkoutCard({required this.workout, required this.isFavorite, required this.onFavoriteToggle});
 
+  String _thumbnailVideoId() {
+    if (workout.type == 'sequence' && workout.clips.isNotEmpty) {
+      return workout.clips.first.videoId;
+    }
+    return workout.videoId;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/workout/${workout.id}'),
       child: SizedBox(
         width: 140,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.25),
-                    blurRadius: 8,
-                    offset: const Offset(0, 4),
-                  ),
-                ],
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.22),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
               ),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16),
-                child: Stack(
-                  fit: StackFit.expand,
-                  children: [
-                    CachedNetworkImage(
-                      imageUrl: BunnyService.getThumbnailUrl(workout.videoId),
-                      fit: BoxFit.cover,
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: Stack(
+              fit: StackFit.expand,
+              children: [
+                CachedNetworkImage(
+                  imageUrl: BunnyService.getThumbnailUrl(_thumbnailVideoId()),
+                  fit: BoxFit.cover,
+                  errorWidget: (_, __, ___) => Container(color: AppTheme.surface),
+                ),
+                DecoratedBox(
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [Colors.black.withOpacity(0.05), Colors.black.withOpacity(0.88)],
+                      stops: const [0.35, 1.0],
                     ),
-                    DecoratedBox(
+                  ),
+                ),
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: GestureDetector(
+                    onTap: onFavoriteToggle,
+                    child: Container(
+                      padding: const EdgeInsets.all(7),
                       decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [Colors.transparent, Colors.black.withOpacity(0.9)],
-                          stops: const [0.4, 1.0],
-                        ),
+                        color: Colors.black.withOpacity(0.38),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(
+                        isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                        color: isFavorite ? AppTheme.accent : Colors.white,
+                        size: 18,
                       ),
                     ),
-                    Positioned(
-                      left: 8,
-                      right: 8,
-                      bottom: 8,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (workout.type == 'sequence')
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                              decoration: BoxDecoration(
-                                color: AppTheme.primary.withOpacity(0.9),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Text(
-                                'Seq',
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  color: AppTheme.background,
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: 10,
-                                ),
-                              ),
-                            ),
-                          if (workout.type == 'sequence') const SizedBox(height: 4),
-                          Text(
-                            workout.title,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Positioned(
+                  left: 10,
+                  right: 10,
+                  bottom: 10,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (workout.type == 'sequence')
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primary.withOpacity(0.9),
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                          const SizedBox(height: 2),
+                          child: Text(
+                            'SEQUENCE',
+                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                              color: AppTheme.background,
+                              fontWeight: FontWeight.w700,
+                              fontSize: 9,
+                              letterSpacing: 0.4,
+                            ),
+                          ),
+                        ),
+                      if (workout.type == 'sequence') const SizedBox(height: 6),
+                      Text(
+                        workout.title,
+                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                          color: Colors.white,
+                          fontWeight: FontWeight.w700,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 3),
+                      Row(
+                        children: [
+                          const Icon(Icons.schedule_rounded, size: 12, color: Colors.white70),
+                          const SizedBox(width: 4),
                           Text(
                             '${workout.duration} min',
                             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: AppTheme.textSecondary,
+                              color: Colors.white70,
                               fontSize: 11,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                    Positioned(
-                      top: 6,
-                      right: 6,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          GestureDetector(
-                            onTap: () {
-                              onFavoriteToggle();
-                            },
-                            child: Container(
-                              padding: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.4),
-                                shape: BoxShape.circle,
-                              ),
-                              child: Icon(
-                                isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                                color: isFavorite ? AppTheme.accent : Colors.white,
-                                size: 18,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          Container(
-                            padding: const EdgeInsets.all(6),
-                            decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.4),
-                              shape: BoxShape.circle,
-                            ),
-                            child: Icon(
-                              workout.type == 'sequence' ? Icons.playlist_play_rounded : Icons.play_arrow_rounded,
-                              color: Colors.white,
-                              size: 16,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
-              ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
@@ -522,7 +540,7 @@ class _FeaturedBanner extends StatelessWidget {
     return GestureDetector(
       onTap: () => context.push('/program/${program.id}'),
       child: Container(
-        height: 100,
+        height: 128,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           gradient: AppTheme.heroGradient,
@@ -534,7 +552,7 @@ class _FeaturedBanner extends StatelessWidget {
             ),
           ],
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         child: Row(
           children: [
             Expanded(
@@ -568,6 +586,13 @@ class _FeaturedBanner extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    '${program.totalWeeks} week plan',
+                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                      color: Colors.white.withOpacity(0.85),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -586,115 +611,107 @@ class _ProgramCard extends StatelessWidget {
 
   const _ProgramCard({required this.program, required this.isFavorite, required this.onFavoriteToggle});
 
+  bool get _hasProgramImage {
+    return program.imageUrl != null && program.imageUrl!.trim().isNotEmpty;
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () => context.push('/program/${program.id}'),
       child: SizedBox(
         width: 160,
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: [
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(16),
-                color: AppTheme.surfaceVariant,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.2),
-                    blurRadius: 6,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(16),
+            color: AppTheme.surfaceVariant,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                blurRadius: 8,
+                offset: const Offset(0, 4),
               ),
-              clipBehavior: Clip.antiAlias,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 3,
-                    child: Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        if (program.imageUrl != null)
-                          CachedNetworkImage(
-                            imageUrl: program.imageUrl!,
-                            fit: BoxFit.cover,
-                          )
-                        else
-                          Container(
-                            decoration: BoxDecoration(
-                              gradient: LinearGradient(
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
-                                colors: [
-                                  AppTheme.surface,
-                                  AppTheme.primary.withOpacity(0.12),
-                                ],
-                              ),
-                            ),
-                            child: Icon(Icons.fitness_center_rounded, size: 32, color: AppTheme.primary.withOpacity(0.5)),
+            ],
+          ),
+          clipBehavior: Clip.antiAlias,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                flex: 3,
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    if (_hasProgramImage)
+                      CachedNetworkImage(
+                        imageUrl: program.imageUrl!,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => Container(color: AppTheme.surface),
+                      )
+                    else
+                      Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppTheme.surface,
+                              AppTheme.primary.withOpacity(0.18),
+                            ],
                           ),
-                        DecoratedBox(
+                        ),
+                        child: Icon(Icons.fitness_center_rounded, size: 32, color: AppTheme.primary.withOpacity(0.55)),
+                      ),
+                    Positioned(
+                      top: 6,
+                      right: 6,
+                      child: GestureDetector(
+                        onTap: onFavoriteToggle,
+                        child: Container(
+                          padding: const EdgeInsets.all(6),
                           decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [Colors.transparent, Colors.black.withOpacity(0.6)],
-                            ),
+                            color: Colors.black.withOpacity(0.4),
+                            shape: BoxShape.circle,
+                          ),
+                          child: Icon(
+                            isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+                            color: isFavorite ? AppTheme.accent : Colors.white,
+                            size: 18,
                           ),
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(
-                          program.title,
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            color: AppTheme.textPrimary,
-                            fontWeight: FontWeight.w600,
-                          ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        Text(
-                          '${program.totalWeeks} wk',
-                          style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                            color: AppTheme.textMuted,
-                            fontSize: 11,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              top: 6,
-              right: 6,
-              child: GestureDetector(
-                onTap: onFavoriteToggle,
-                child: Container(
-                  padding: const EdgeInsets.all(6),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.4),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Icon(
-                    isFavorite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
-                    color: isFavorite ? AppTheme.accent : Colors.white,
-                    size: 18,
-                  ),
+                  ],
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      program.title,
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppTheme.textPrimary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      '${program.totalWeeks} weeks',
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                        color: AppTheme.textMuted,
+                        fontSize: 11,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

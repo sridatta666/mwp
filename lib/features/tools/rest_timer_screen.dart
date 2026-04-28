@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 
 class RestTimerScreen extends StatefulWidget {
   const RestTimerScreen({super.key});
@@ -64,7 +65,8 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
         title: const Text('Rest timer'),
         backgroundColor: Colors.transparent,
       ),
-      body: SafeArea(
+      body: GlassPage(
+        child: SafeArea(
         child: Padding(
           padding: const EdgeInsets.all(24),
           child: Column(
@@ -151,6 +153,7 @@ class _RestTimerScreenState extends State<RestTimerScreen> {
               ],
             ],
           ),
+        ),
         ),
       ),
     );

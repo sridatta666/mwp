@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/supabase_service.dart';
 import '../../core/models.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 
 class WorkoutHistoryScreen extends StatefulWidget {
   const WorkoutHistoryScreen({super.key});
@@ -58,7 +59,8 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
             ),
         ],
       ),
-      body: _isLoading
+      body: GlassPage(
+        child: _isLoading
           ? const Center(child: CircularProgressIndicator(color: AppTheme.primary))
           : _entries.isEmpty
               ? Center(
@@ -112,6 +114,7 @@ class _WorkoutHistoryScreenState extends State<WorkoutHistoryScreen> {
                     },
                   ),
                 ),
+      ),
     );
   }
 }

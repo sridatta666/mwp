@@ -5,8 +5,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../../core/supabase_service.dart';
-import '../../core/models.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 
 class AdminUploadScreen extends StatefulWidget {
   const AdminUploadScreen({super.key});
@@ -251,9 +251,10 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
         title: const Text("Upload Workout"),
         backgroundColor: Colors.transparent,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
+      body: GlassPage(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // 1. Metadata Form
@@ -314,7 +315,8 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
                 child: Text(_isSaving ? "Saving…" : "Publish workout"),
               ),
             ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -330,31 +332,29 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
         const SizedBox(height: 10),
         GestureDetector(
           onTap: _pickVideo,
-          child: Container(
-            height: 150,
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppTheme.surfaceVariant,
-              borderRadius: BorderRadius.circular(18),
-              border: Border.all(color: AppTheme.surfaceVariant),
+          child: GlassCard(
+            borderRadius: 18,
+            child: SizedBox(
+              height: 150,
+              width: double.infinity,
+              child: _selectedVideo == null
+                  ? Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.video_library_rounded, color: AppTheme.primary, size: 40),
+                        const SizedBox(height: 10),
+                        Text("Tap to select video", style: TextStyle(color: AppTheme.textMuted)),
+                      ],
+                    )
+                  : Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.check_circle_rounded, color: AppTheme.primary, size: 40),
+                        const SizedBox(height: 10),
+                        Text(_selectedVideo!.path.split(RegExp(r'[/\\]')).last, style: TextStyle(color: AppTheme.textPrimary)),
+                      ],
+                    ),
             ),
-            child: _selectedVideo == null
-                ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.video_library_rounded, color: AppTheme.primary, size: 40),
-                      const SizedBox(height: 10),
-                      Text("Tap to select video", style: TextStyle(color: AppTheme.textMuted)),
-                    ],
-                  )
-                : Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(Icons.check_circle_rounded, color: AppTheme.primary, size: 40),
-                      const SizedBox(height: 10),
-                      Text(_selectedVideo!.path.split(RegExp(r'[/\\]')).last, style: TextStyle(color: AppTheme.textPrimary)),
-                    ],
-                  ),
           ),
         ),
         const SizedBox(height: 20),
@@ -372,13 +372,8 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
             ),
           ),
         if (_uploadedVideoId != null)
-          Container(
+          GlassCard(
             padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: AppTheme.primary.withOpacity(0.15),
-              borderRadius: BorderRadius.circular(14),
-              border: Border.all(color: AppTheme.primary.withOpacity(0.5)),
-            ),
             child: Row(
               children: [
                 Icon(Icons.check_rounded, color: AppTheme.primary),
@@ -415,13 +410,8 @@ class _AdminUploadScreenState extends State<AdminUploadScreen> {
           itemBuilder: (context, index) {
             final clip = _clips[index];
             final isUploaded = clip['videoId'] != null;
-            return Container(
+            return GlassCard(
               padding: const EdgeInsets.all(14),
-              decoration: BoxDecoration(
-                color: AppTheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(14),
-                border: Border.all(color: isUploaded ? AppTheme.primary.withOpacity(0.5) : AppTheme.surfaceVariant),
-              ),
               child: Column(
                 children: [
                   Row(

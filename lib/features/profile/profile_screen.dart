@@ -6,6 +6,7 @@ import '../../core/download_service.dart';
 import '../../core/supabase_service.dart';
 import '../../core/settings_service.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -89,9 +90,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
         title: const Text("Profile"),
         backgroundColor: Colors.transparent,
       ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Column(
+      body: GlassPage(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          child: Column(
           children: [
             const SizedBox(height: 24),
             Center(
@@ -124,13 +126,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 32),
 
             // Progress stats
-            Container(
-              width: double.infinity,
+            GlassCard(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppTheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(20),
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -240,14 +237,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 24),
 
             // Storage card
-            Container(
-              width: double.infinity,
+            GlassCard(
               padding: const EdgeInsets.all(20),
-              decoration: BoxDecoration(
-                color: AppTheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(20),
-                border: Border.all(color: AppTheme.surfaceVariant),
-              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -312,11 +303,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
               style: theme.textTheme.labelLarge?.copyWith(color: AppTheme.textMuted, letterSpacing: 1),
             ),
             const SizedBox(height: 12),
-            Container(
-              decoration: BoxDecoration(
-                color: AppTheme.surfaceVariant,
-                borderRadius: BorderRadius.circular(16),
-              ),
+            GlassCard(
+              borderRadius: 16,
               child: Column(
                 children: [
                   SwitchListTile(
@@ -416,6 +404,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const SizedBox(height: 40),
           ],
+          ),
         ),
       ),
     );

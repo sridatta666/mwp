@@ -15,6 +15,7 @@ import '../../core/models.dart';
 import '../../core/bunny_service.dart';
 import '../../core/download_service.dart';
 import '../../core/theme.dart';
+import '../../core/glass_widgets.dart';
 import 'sequence_player.dart';
 
 class WorkoutScreen extends StatefulWidget {
@@ -244,23 +245,26 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
     if (_workout == null) {
       return Scaffold(
         backgroundColor: AppTheme.background,
-        body: Center(child: CircularProgressIndicator(color: AppTheme.primary)),
+        body: GlassPage(child: Center(child: CircularProgressIndicator(color: AppTheme.primary))),
       );
     }
 
     if (_workout!.type == 'sequence') {
       return Scaffold(
         backgroundColor: AppTheme.background,
-        body: SequencePlayer(
-          workout: _workout!,
-          onComplete: _handleWorkoutComplete,
+        body: GlassPage(
+          child: SequencePlayer(
+            workout: _workout!,
+            onComplete: _handleWorkoutComplete,
+          ),
         ),
       );
     }
 
     return Scaffold(
       backgroundColor: AppTheme.background,
-      body: OrientationBuilder(
+      body: GlassPage(
+        child: OrientationBuilder(
         builder: (context, orientation) {
           final isLandscape = orientation == Orientation.landscape;
 
@@ -396,6 +400,7 @@ class _WorkoutScreenState extends State<WorkoutScreen> {
             ],
           );
         },
+        ),
       ),
     );
   }

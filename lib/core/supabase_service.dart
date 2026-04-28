@@ -119,9 +119,43 @@ class SupabaseService {
     final rawData = await _fetchWithCache('all_programs', () async {
       return await _client.from('programs').select().order('created_at', ascending: false);
     });
-    
-    // USE _cast HERE
-    return rawData.map((item) => Program.fromJson(_cast(item))).toList();
+
+    final programs = rawData.map((item) => Program.fromJson(_cast(item))).toList();
+    if (programs.isEmpty) return programs;
+
+    final dayRows = await _client
+        .from('program_days')
+        .select('program_id, week_number, day_number')
+        .inFilter('program_id', programs.map((p) => p.id).toList());
+
+    final weeksByProgram = <String, int>{};
+    for (final row in (dayRows as List)) {
+      final item = _cast(row);
+      final programId = item['program_id']?.toString();
+      if (programId == null) continue;
+      final weekNumber = (item['week_number'] as num?)?.toInt() ?? 0;
+      final dayNumber = (item['day_number'] as num?)?.toInt() ?? 0;
+      final derivedWeek = weekNumber > 0 ? weekNumber : ((dayNumber - 1) ~/ 7) + 1;
+      final current = weeksByProgram[programId] ?? 0;
+      if (derivedWeek > current) {
+        weeksByProgram[programId] = derivedWeek;
+      }
+    }
+
+    return programs
+        .map(
+          (p) => Program(
+            id: p.id,
+            title: p.title,
+            description: p.description,
+            totalWeeks: weeksByProgram[p.id] ?? p.totalWeeks,
+            difficulty: p.difficulty,
+            imageUrl: p.imageUrl,
+            type: p.type,
+            clips: p.clips,
+          ),
+        )
+        .toList();
   }
 
   // 2. Fetch Days
